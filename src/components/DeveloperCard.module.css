@@ -22,3 +22,12 @@
 }
 .title { font-size: 1.25rem; overflow-wrap: anywhere; }
 .role { opacity: 0.8; }
+
+.profile, .metrics {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+}
+.profile dt, .metrics dt { text-transform: capitalize; opacity: 0.8; }
+.profile dd, .metrics dd { font-weight: 600; }
+.skills { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; }

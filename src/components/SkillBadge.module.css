@@ -1,1 +1,7 @@
-/* styles added in style(ex1) commits */
+.badge {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  font-size: 0.875rem;
+}
+.tier { opacity: 0.8; font-size: 0.75rem; }
