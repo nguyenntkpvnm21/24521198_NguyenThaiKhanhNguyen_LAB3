@@ -12,10 +12,10 @@
    }
 
    export function DeveloperCard({
-     fullName = 'Tran Vinh Khiem',
+     fullName = 'Nguyen Thai Khanh Nguyen',
      role = 'Senior Systems Architect • UIT S3T',
      avatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240',
-     profile = { firstName: 'Khiem', lastName: 'Tran', age: 30 },
+     profile = { firstName: 'Nguyen', lastName: 'Nguyen', age: 20 },
      metrics = { commits: 512, vdomNodes: 0, a11yScore: 100 },
      skills = [
        { id: 'sk-1', name: 'React 19 Fiber', tier: 'Core' },
