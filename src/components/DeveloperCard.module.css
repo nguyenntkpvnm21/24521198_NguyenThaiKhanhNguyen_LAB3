@@ -31,3 +31,9 @@
 .profile dt, .metrics dt { text-transform: capitalize; opacity: 0.8; }
 .profile dd, .metrics dd { font-weight: 600; }
 .skills { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; }
+
+@media (max-width: 480px) {
+  .card { --space: 0.75rem; border-radius: 8px; }
+  .title { font-size: 1.1rem; }
+  .profile, .metrics { grid-template-columns: 1fr; }
+}
