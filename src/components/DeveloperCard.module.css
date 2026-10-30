@@ -1,1 +1,24 @@
-/* styles added in style(ex1) commits */
+.card {
+  display: grid;
+  gap: var(--space);
+  width: 100%;
+  max-width: 480px;
+  margin-inline: auto;
+  padding: var(--space);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  color: var(--text-primary);
+}
+
+.header { display: flex; align-items: center; gap: var(--space); }
+.avatar, .initials { width: 64px; height: 64px; border-radius: 50%; flex-shrink: 0; }
+.avatar { object-fit: cover; }
+.initials {
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 700;
+}
+.title { font-size: 1.25rem; overflow-wrap: anywhere; }
+.role { opacity: 0.8; }
