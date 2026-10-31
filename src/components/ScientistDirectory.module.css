@@ -1,0 +1,33 @@
+.directory {
+  display: block;
+}
+
+.filters {
+  display: block;
+}
+
+.field {
+  display: block;
+}
+
+.actions {
+  display: block;
+}
+
+.status {
+  display: block;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: block;
+}
+
+.deleteButton {
+  cursor: pointer;
+}
