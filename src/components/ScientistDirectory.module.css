@@ -1,33 +1,98 @@
 .directory {
-  display: block;
+  display: grid;
+  gap: var(--space);
+  min-width: 0;
+  padding: var(--space);
+  background: var(--card-bg);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: var(--radius);
 }
 
 .filters {
-  display: block;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--space);
+  align-items: end;
 }
 
 .field {
-  display: block;
+  display: grid;
+  gap: calc(var(--space) / 4);
+  min-width: 0;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 calc(var(--space) * 0.75);
+  font: inherit;
+  color: var(--text-primary);
+  background: var(--bg-page);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: calc(var(--radius) / 2);
 }
 
 .actions {
-  display: block;
+  display: grid;
 }
 
-.status {
-  display: block;
+.actions button,
+.deleteButton {
+  min-height: 2.75rem;
+  padding: 0 var(--space);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--accent);
+  border-radius: calc(var(--radius) / 2);
 }
 
-.list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.actions button {
+  color: var(--accent-contrast);
+  background: var(--accent);
 }
 
-.item {
-  display: block;
+.actions button:hover {
+  filter: brightness(1.1);
 }
 
 .deleteButton {
-  cursor: pointer;
+  color: var(--text-primary);
+  background: transparent;
+}
+
+.deleteButton:hover {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.actions button:focus-visible,
+.deleteButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.status {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.list {
+  display: grid;
+  gap: calc(var(--space) * 0.75);
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--space) / 2) var(--space);
+  padding: calc(var(--space) * 0.75) var(--space);
+  overflow-wrap: anywhere;
+  background: var(--bg-page);
+  border-radius: calc(var(--radius) / 2);
 }
