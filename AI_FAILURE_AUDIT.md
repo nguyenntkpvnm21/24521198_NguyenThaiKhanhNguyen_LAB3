@@ -29,3 +29,38 @@ Entries are added as they are found across Lab 3.
     warnings; removed (kept only on `<ul>`).
   - A planned commit imported `DeveloperCard` before the file existed, which
     would break the build; reordered so every commit builds.
+
+    ## Failure #02: Empty number input coerced to 0 (Exercise 2, Min IQ filter)
+
+- **Prompt**: Task 2.6 of the Ex2 WBS (one task only): add a Min IQ numeric
+  filter that reads `e.target.valueAsNumber`.
+- **AI output**: The handler followed the reference pattern from the Lab 3
+  slide and stored `0` whenever the value was not a number:
+  ```js
+  const handleMinIqChange = (e) => {
+    const value = e.target.valueAsNumber;
+    setMinIq(Number.isNaN(value) ? 0 : value);
+  };
+  ```
+- **Bug**: When the field is cleared, `valueAsNumber` is `NaN`, so the handler
+  stores `0`. The input is controlled, so React renders `0` back into the field
+  and the next digits are appended to it: typing `195`, clearing the field and
+  typing `211` shows `0211`. The state cannot tell an empty field apart from a
+  real `0`.
+- **Detection method**: Manual edge-case test (clear the field, then type
+  again). Lint and the happy path (typing a number once) did not reveal it.
+- **DevTools proof**: Screenshot of the page showing `0211` in the Min IQ field
+  (`ex2-bug-miniq-0211.png`, included in the Lab 3 PDF). A React DevTools
+  screenshot of the `minIq` state was not captured before the fix.
+- **Engineering fix (commit `fc81ee9`)**: Keep the state as `number | ''`. The
+  handler stores `''` when `Number.isNaN(value)`, and the filter derives
+  `const minIqThreshold = minIq === '' ? 0 : minIq` during render, so there is
+  still no `useEffect` and no extra state. The faulty version was caught before
+  it was committed, so the fix ships inside
+  `feat(ex2): add search, IQ filter & toSorted`.
+- **Verification after fix**: Repeated 195, clear, 211. The field stays empty
+  after clearing (all 6 people visible) and shows `211` afterwards (empty
+  list). `npm run lint` is clean.
+- **Lesson**: Never map an empty or invalid reading to a valid value (`0`) in
+  the `onChange` of a controlled number input. Keep "empty" as its own state
+  and convert it only where the value is used.
