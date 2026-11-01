@@ -61,18 +61,18 @@
 ```
 
 # Work Breakdown Structure (Exercise 3)
-- [ ] Task 3.1: WBS and contract for PubgMatchTelemetry (docs commit)
-- [ ] Task 3.2: CSS Module scaffold with agreed class names (CSS only)
-- [ ] Task 3.3: Simulated telemetry API with 35% packet loss and abort support
-- [ ] Task 3.4: State machine view (IDLE, LOADING, SUCCESS, ERROR) with fetch effect and AbortController cleanup (mandatory commit 1)
-- [ ] Task 3.4a: Derive view state during render to avoid setState in effect (lint fix)
-- [ ] Task 3.5: Squad selector with aria-pressed buttons
-- [ ] Task 3.6: Success view with squad stats in a semantic dl
-- [ ] Task 3.7: Skeleton loader with aria-busy and fixed 220px height
-- [ ] Task 3.8: Error alert with role=alert and Reconnect Satellite Retry button (mandatory commit 2 covers 3.5 to 3.8)
-- [ ] Task 3.9: Mount PubgMatchTelemetry in App
-- [ ] Task 3.10: CSS layout, skeleton pulse animation, then responsive 375px (CSS only)
-- [ ] Task 3.11: Verification (Slow 3G, canceled requests, CLS, grep, lint) and AI failure notes
+- [x] Task 3.1: WBS and contract for PubgMatchTelemetry (docs commit)
+- [x] Task 3.2: CSS Module scaffold with agreed class names (CSS only)
+- [x] Task 3.3: Simulated telemetry API with 35% packet loss and abort support
+- [x] Task 3.4: State machine view (IDLE, LOADING, SUCCESS, ERROR) with fetch effect and AbortController cleanup (mandatory commit 1)
+- [x] Task 3.4a: Derive view state during render to avoid setState in effect (lint fix)
+- [x] Task 3.5: Squad selector with aria-pressed buttons
+- [x] Task 3.6: Success view with squad stats in a semantic dl
+- [x] Task 3.7: Skeleton loader with aria-busy and fixed 220px height
+- [x] Task 3.8: Error alert with role=alert and Reconnect Satellite Retry button (mandatory commit 2 covers 3.5 to 3.8)
+- [x] Task 3.9: Mount PubgMatchTelemetry in App (done inside mandatory commit 1)
+- [x] Task 3.10: CSS layout, skeleton pulse animation, then responsive 375px (CSS only)
+- [x] Task 3.11: Verification (Slow 3G, canceled requests, CLS, grep, lint) and AI failure notes
 - [ ] Task 3.12: Push to GitHub and tag ex3-done
 
 * RULE: Never prompt AI with more than 1 sub-task at a time.
@@ -99,9 +99,9 @@
  *   - rejects with error.name === 'AbortError' when signal aborts
  *   - clears its timer when aborted
  *
- * PubgMatchTelemetry props: { squadId? = 'te' }
- * State: result { key, data, error } (key = squadId, plus retryTick once retry exists)
- * view: ViewState is derived in render: IDLE if squadId is empty, LOADING if result.key differs from the request key, ERROR if result.error is set, else SUCCESS
+ * PubgMatchTelemetry props: { squadId? = 'te', onSquadChange? }
+ * State: activeId, retryTick, result { key, data, error }; key = `${activeId}#${retryTick}`
+ * view: ViewState is derived in render: IDLE if activeId is empty, LOADING if result.key differs from the request key, ERROR if result.error is set, else SUCCESS
  * Effect deps: [squadId, retryTick]; cleanup = controller.abort()
  * Retry button label: 'Reconnect Satellite Retry'
  * CSS Module classes: telemetry, selector, selectorButton, skeleton, alert, card, stats
