@@ -16,6 +16,7 @@ const SMART_PEOPLE = [
 
 const DEFAULT_MIN_IQ = 160;
 const DEFAULT_SORT = 'iq-desc';
+const BLOCKED_MIN_IQ_KEYS = ['e', 'E', '+', '-'];
 
 const COMPARATORS = {
   'iq-desc': (a, b) => b.iq - a.iq,
@@ -34,6 +35,11 @@ export function ScientistDirectory({ initialData = SMART_PEOPLE }) {
   const handleMinIqChange = (e) => {
     const value = e.target.valueAsNumber;
     setMinIq(Number.isNaN(value) ? '' : value);
+  };
+
+  const handleMinIqKeyDown = (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (BLOCKED_MIN_IQ_KEYS.includes(e.key)) e.preventDefault();
   };
 
   const handleDelete = (id) => {
@@ -82,6 +88,7 @@ export function ScientistDirectory({ initialData = SMART_PEOPLE }) {
             min="0"
             value={minIq}
             onChange={handleMinIqChange}
+            onKeyDown={handleMinIqKeyDown}
           />
         </p>
         <p className={styles.field}>
