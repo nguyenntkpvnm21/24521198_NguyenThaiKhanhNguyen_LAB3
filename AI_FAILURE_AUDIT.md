@@ -64,3 +64,26 @@ Entries are added as they are found across Lab 3.
 - **Lesson**: Never map an empty or invalid reading to a valid value (`0`) in
   the `onChange` of a controlled number input. Keep "empty" as its own state
   and convert it only where the value is used.
+
+  ## Failure #03: setState called synchronously inside useEffect (Exercise 3)
+- **Prompt**: "Implement PubgMatchTelemetry with a 4-state machine and
+  AbortController, following the reference contract."
+- **AI output**: The effect started with `setView({ status: 'LOADING', ... })`
+  before calling the fetch function, copied from the reference pattern.
+- **Bug**: Setting state synchronously in an effect schedules an extra render
+  right after commit (a cascading render). The LOADING status is a pure function
+  of "the settled result does not match the current request", so it should be
+  derived during render and not written into state.
+- **Detection method**: `npm run lint` reported
+  `react(set-state-in-effect): Calling setState synchronously within an effect
+  can trigger cascading renders` at PubgMatchTelemetry.jsx:12.
+- **DevTools proof**: ex3-lint-setstate-before.png (lint output before the fix).
+  No Profiler render count was captured before the fix, so none is claimed.
+- **Engineering fix (commit 99d6541)**: Stored only the last settled result with
+  a request key, derived IDLE/LOADING/ERROR/SUCCESS during render, and kept the
+  effect for the network call and `controller.abort()` cleanup only.
+- **Verification after fix**: ex3-lint-setstate-after.png shows 0 warnings;
+  switching squads on Slow 3G still shows the skeleton and `(canceled)` for
+  stale requests.
+- **Lesson**: Do not copy "set LOADING at the start of an effect". If a value
+  can be computed from state and props, derive it during render.
