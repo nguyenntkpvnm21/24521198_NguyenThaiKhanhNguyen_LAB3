@@ -37,7 +37,8 @@
 - [x] Task 2.10: Live result count in output role=status (mandatory commit 3 covers 2.8 to 2.10)
 - [x] Task 2.11: CSS layout, then responsive 375px (CSS only)
 - [x] Task 2.12: Verification (Profiler, Accessibility tree, grep, lint) and AI failure notes
-- [ ] Task 2.13: Push to GitHub and tag ex2-done
+- [x] Task 2.13: Push to GitHub and tag ex2-done
+- [ ] Task 2.14: Block e, E, + and - keys in the Min IQ input (hardening)
 
 * RULE: Never prompt AI with more than 1 sub-task at a time.
 * RULE: Mandatory commits contain JSX/JS only. CSS goes in its own commits (2.2, 2.11).
