@@ -65,6 +65,7 @@
 - [ ] Task 3.2: CSS Module scaffold with agreed class names (CSS only)
 - [ ] Task 3.3: Simulated telemetry API with 35% packet loss and abort support
 - [ ] Task 3.4: State machine view (IDLE, LOADING, SUCCESS, ERROR) with fetch effect and AbortController cleanup (mandatory commit 1)
+- [ ] Task 3.4a: Derive view state during render to avoid setState in effect (lint fix)
 - [ ] Task 3.5: Squad selector with aria-pressed buttons
 - [ ] Task 3.6: Success view with squad stats in a semantic dl
 - [ ] Task 3.7: Skeleton loader with aria-busy and fixed 220px height
@@ -99,7 +100,8 @@
  *   - clears its timer when aborted
  *
  * PubgMatchTelemetry props: { squadId? = 'te' }
- * State: view: ViewState, retryTick: number
+ * State: result { key, data, error } (key = squadId, plus retryTick once retry exists)
+ * view: ViewState is derived in render: IDLE if squadId is empty, LOADING if result.key differs from the request key, ERROR if result.error is set, else SUCCESS
  * Effect deps: [squadId, retryTick]; cleanup = controller.abort()
  * Retry button label: 'Reconnect Satellite Retry'
  * CSS Module classes: telemetry, selector, selectorButton, skeleton, alert, card, stats
