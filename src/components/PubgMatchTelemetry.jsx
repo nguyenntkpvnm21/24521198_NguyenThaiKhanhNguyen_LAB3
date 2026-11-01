@@ -4,6 +4,12 @@ import styles from './PubgMatchTelemetry.module.css';
 
 /** @typedef {'IDLE' | 'LOADING' | 'SUCCESS' | 'ERROR'} ViewStatus */
 
+/**
+ * Live telemetry radar for one PVS squad. The view status is derived during
+ * render from the last settled result; the effect only talks to the network
+ * and aborts the in-flight request on cleanup.
+ * @param {{ squadId?: string }} props
+ */
 export function PubgMatchTelemetry({ squadId = 'te' }) {
   const [result, setResult] = useState({ key: '', data: null, error: null });
 
