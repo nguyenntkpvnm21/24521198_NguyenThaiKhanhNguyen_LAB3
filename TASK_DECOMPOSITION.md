@@ -108,3 +108,50 @@
  * Headings: section h2 via aria-labelledby, result h3, no h1, no div
  */
 ```
+
+# Work Breakdown Structure (Homework 1)
+- [ ] Task H1.1: WBS and contract for Production Studio Drum Kit (docs commit)
+- [ ] Task H1.2: CSS Module scaffold with agreed class names (CSS only)
+- [ ] Task H1.3: Pad map keyed by e.code (data only)
+- [ ] Task H1.4: Web Audio drum synth engine (no audio files)
+- [ ] Task H1.5: useDrumKeyboard hook (e.code, repeat guard, input isolation, cleanup)
+- [ ] Task H1.6: DrumPad button with aria-pressed
+- [ ] Task H1.7: DrumMachine with active pads and hit log output
+- [ ] Task H1.8: Decibel meter with AnalyserNode
+- [ ] Task H1.9: Keyboard shortcuts toggle (WCAG 2.1.4)
+- [ ] Task H1.10: Mount DrumMachine in App as a separate view
+- [ ] Task H1.11: CSS layout, responsive 375px, focus ring, reduced motion (CSS only)
+- [ ] Task H1.12: Verification (Lighthouse, Accessibility tree, grep, lint) and AI failure notes
+- [ ] Task H1.13: Push to GitHub and tag hw1-done
+
+* RULE: Never prompt AI with more than 1 sub-task at a time.
+* RULE: Commits contain JSX/JS only or CSS only, never both.
+
+## HW1 contract
+```js
+/**
+ * @typedef {Object} DrumPad
+ * @property {string} id         stable id, e.g. 'kick'
+ * @property {string} code       KeyboardEvent.code, e.g. 'KeyA'
+ * @property {string} keyLabel   text on the pad, e.g. 'A'
+ * @property {string} label      accessible name, e.g. 'Kick'
+ *
+ * @typedef {Object} HitEntry
+ * @property {string} id         crypto.randomUUID()
+ * @property {string} padId
+ * @property {string} text       e.g. 'Kick (A)'
+ *
+ * useDrumKeyboard(padMap: Map<string, DrumPad>, onTriggerPad: (padId) => void,
+ *                 isEnabled = true, onReleasePad?: (padId) => void)
+ * DrumSynth: { trigger(padId): boolean, getLevelDb(): number, dispose(): void }
+ * State: activePadIds: string[] (immutable), hits: HitEntry[] (max 8, newest first),
+ *        shortcutsEnabled: boolean (default true)
+ * Meter: AnalyserNode RMS in dB (floor -60), written to a ref in a rAF loop,
+ *        cleanup = cancelAnimationFrame; no per-frame setState
+ * Live region: one <output aria-live="polite" aria-atomic="true"> with the latest hit;
+ *        the history <ol> is NOT live
+ * CSS Module classes: drumMachine, controls, field, pads, pad, padActive, padKey,
+ *        padName, meterGroup, meter, log, logList, logItem
+ * Headings: section h2 via aria-labelledby, h3 for sub-sections, no h1, no div
+ */
+```
