@@ -73,7 +73,7 @@
 - [x] Task 3.9: Mount PubgMatchTelemetry in App (done inside mandatory commit 1)
 - [x] Task 3.10: CSS layout, skeleton pulse animation, then responsive 375px (CSS only)
 - [x] Task 3.11: Verification (Slow 3G, canceled requests, CLS, grep, lint) and AI failure notes
-- [ ] Task 3.12: Push to GitHub and tag ex3-done
+- [x] Task 3.12: Push to GitHub and tag ex3-done
 
 * RULE: Never prompt AI with more than 1 sub-task at a time.
 * RULE: Mandatory commits contain JSX/JS only. CSS goes in its own commits (3.2, 3.10).
