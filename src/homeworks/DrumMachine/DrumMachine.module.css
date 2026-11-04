@@ -1,0 +1,15 @@
+.drumMachine,
+.controls,
+.field,
+.pads,
+.pad,
+.padActive,
+.padKey,
+.padName,
+.meterGroup,
+.meter,
+.log,
+.logList,
+.logItem {
+  min-width: 0;
+}
