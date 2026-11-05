@@ -141,3 +141,19 @@
     transform: scale(0.97);
   }
 }
+
+.field {
+  flex-wrap: wrap;
+}
+
+.field input[type='text'] {
+  flex: 1 1 12rem;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0 calc(var(--space) * 0.75);
+  font: inherit;
+  color: var(--text-primary);
+  background: var(--bg-page);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: calc(var(--radius) / 2);
+}
