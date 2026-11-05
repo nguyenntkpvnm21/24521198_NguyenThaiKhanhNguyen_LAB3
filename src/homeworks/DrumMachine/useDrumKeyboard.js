@@ -1,6 +1,17 @@
 import { useEffect } from 'react';
 
-const TEXT_ENTRY_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
+const TEXT_ENTRY_TAGS = ['TEXTAREA', 'SELECT'];
+const NON_TEXT_INPUT_TYPES = new Set([
+  'checkbox',
+  'radio',
+  'button',
+  'submit',
+  'reset',
+  'range',
+  'color',
+  'file',
+  'image',
+]);
 
 // Telex IME (UniKey) can swallow the physical keydown and inject synthetic
 // ones whose e.code is '' and whose e.key is the composed letter. Map those
@@ -14,10 +25,12 @@ const COMPOSED_LETTER_TO_CODE = new Map([
 ]);
 
 function isTypingTarget(target) {
-  return (
-    target instanceof HTMLElement &&
-    (TEXT_ENTRY_TAGS.includes(target.tagName) || target.isContentEditable)
-  );
+  if (!(target instanceof HTMLElement)) return false;
+  if (target.isContentEditable) return true;
+  if (target instanceof HTMLInputElement) {
+    return !NON_TEXT_INPUT_TYPES.has(target.type);
+  }
+  return TEXT_ENTRY_TAGS.includes(target.tagName);
 }
 
 function resolveCode(e) {
