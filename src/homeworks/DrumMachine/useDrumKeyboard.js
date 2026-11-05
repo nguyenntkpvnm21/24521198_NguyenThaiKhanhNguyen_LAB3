@@ -2,6 +2,17 @@ import { useEffect } from 'react';
 
 const TEXT_ENTRY_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
 
+// Telex IME (UniKey) can swallow the physical keydown and inject synthetic
+// ones whose e.code is '' and whose e.key is the composed letter. Map those
+// letters back to the physical key that produced them.
+const COMPOSED_LETTER_TO_CODE = new Map([
+  ['đ', 'KeyD'],
+  ['â', 'KeyA'],
+  ['ă', 'KeyW'],
+  ['ư', 'KeyW'],
+  ['ơ', 'KeyW'],
+]);
+
 function isTypingTarget(target) {
   return (
     target instanceof HTMLElement &&
@@ -9,8 +20,16 @@ function isTypingTarget(target) {
   );
 }
 
+function resolveCode(e) {
+  if (e.code) return e.code;
+  if (typeof e.key !== 'string' || e.key.length !== 1) return '';
+  const letter = e.key.toLowerCase();
+  return COMPOSED_LETTER_TO_CODE.get(letter) ?? `Key${letter.toUpperCase()}`;
+}
+
 /**
- * Global drum shortcuts via KeyboardEvent.code (IME-safe).
+ * Global drum shortcuts via KeyboardEvent.code, with a fallback to e.key when
+ * a Vietnamese IME (UniKey) sends synthetic events with an empty e.code.
  * onTriggerPad / onReleasePad must be stable (useCallback) and padMap must be
  * defined outside the component, otherwise the listeners are re-attached on
  * every render.
@@ -33,7 +52,7 @@ export function useDrumKeyboard(
       if (e.repeat) return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (isTypingTarget(e.target)) return;
-      const pad = padMap.get(e.code);
+      const pad = padMap.get(resolveCode(e));
       if (!pad) return;
       e.preventDefault();
       onTriggerPad(pad.id);
