@@ -1,0 +1,32 @@
+.viewSwitch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space);
+  list-style: none;
+}
+
+.viewButton {
+  min-height: 2.75rem;
+  padding: 0 var(--space);
+  font: inherit;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: calc(var(--radius) / 2);
+  cursor: pointer;
+}
+
+.viewButton:hover:not([aria-pressed='true']) {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.viewButton[aria-pressed='true'] {
+  color: var(--accent-contrast);
+  background: var(--accent);
+}
+
+.viewButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
