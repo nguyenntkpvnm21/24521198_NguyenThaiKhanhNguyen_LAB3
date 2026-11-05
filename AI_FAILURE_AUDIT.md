@@ -87,3 +87,35 @@ Entries are added as they are found across Lab 3.
   stale requests.
 - **Lesson**: Do not copy "set LOADING at the start of an effect". If a value
   can be computed from state and props, derive it during render.
+
+  ## Failure #04: IME (UniKey) breaks e.code shortcuts and ghost-triggers pads (HW1)
+
+- **Prompt**: "Implement useDrumKeyboard(padMap, onTriggerPad, isEnabled) with
+  e.code, an e.repeat guard and input isolation, as in the HW1 contract."
+- **AI output**: A window keydown listener reading padMap.get(e.code),
+  commented as "IME-safe". A first patch added an e.key fallback that
+  turned events with e.code === '' into pad hits.
+- **Bug**: With Vietnamese Telex IME (UniKey) on, the physical keydown is
+  swallowed and replaced by synthetic events (code "", a marker character,
+  Backspaces, re-typed letters). The first version dropped hits (only the
+  first D worked). The e.key fallback fixed D but replayed a typed "a" after
+  "s", so pressing A then S logged Kick, Kick, Snare. After the final fix,
+  pads triggered only by a keyup never lit up, because aria-pressed went
+  true and false inside one React batch.
+- **Detection method**: Manual test with UniKey on, plus a temporary
+  keydown/keyup logger in the Console printing code, key and repeat.
+- **DevTools proof**: Console screenshots of the raw event stream (events
+  with code "" and Backspace between the physical events), and a Hit log
+  screenshot showing Kick, Kick, Snare after pressing A then S once each.
+  Both are in the submission PDF.
+- **Engineering fix (commit 06d6f54)**: Ignore every event whose e.code is
+  empty. Track physical keydowns in a Set and trigger the pad from keyup
+  when its keydown was swallowed. Earlier attempt: 22e7903 (e.key fallback,
+  which introduced the ghost hit). Visual feedback: 3a84868 (a pad stays
+  active for at least 120 ms).
+- **Verification after fix**: With UniKey on, A then S gives exactly two
+  hits, and D, A, W pressed five times each give five hits; with UniKey off
+  every press gives one hit.
+- **Lesson**: A spec claiming e.code is IME-safe is not proof. Test with the
+  real IME, log the raw events before patching, and never design a fallback
+  from the symptom of a single key.
