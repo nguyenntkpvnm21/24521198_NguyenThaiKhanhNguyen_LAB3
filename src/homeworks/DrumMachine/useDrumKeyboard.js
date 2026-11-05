@@ -13,17 +13,6 @@ const NON_TEXT_INPUT_TYPES = new Set([
   'image',
 ]);
 
-// Telex IME (UniKey) can swallow the physical keydown and inject synthetic
-// ones whose e.code is '' and whose e.key is the composed letter. Map those
-// letters back to the physical key that produced them.
-const COMPOSED_LETTER_TO_CODE = new Map([
-  ['đ', 'KeyD'],
-  ['â', 'KeyA'],
-  ['ă', 'KeyW'],
-  ['ư', 'KeyW'],
-  ['ơ', 'KeyW'],
-]);
-
 function isTypingTarget(target) {
   if (!(target instanceof HTMLElement)) return false;
   if (target.isContentEditable) return true;
@@ -33,16 +22,18 @@ function isTypingTarget(target) {
   return TEXT_ENTRY_TAGS.includes(target.tagName);
 }
 
-function resolveCode(e) {
-  if (e.code) return e.code;
-  if (typeof e.key !== 'string' || e.key.length !== 1) return '';
-  const letter = e.key.toLowerCase();
-  return COMPOSED_LETTER_TO_CODE.get(letter) ?? `Key${letter.toUpperCase()}`;
+function isShortcutBlocked(e) {
+  return e.ctrlKey || e.metaKey || e.altKey || isTypingTarget(e.target);
 }
 
 /**
- * Global drum shortcuts via KeyboardEvent.code, with a fallback to e.key when
- * a Vietnamese IME (UniKey) sends synthetic events with an empty e.code.
+ * Global drum shortcuts via KeyboardEvent.code.
+ *
+ * Vietnamese IMEs (UniKey) inject synthetic events whose e.code is '' (marker
+ * chars, Backspaces, re-typed letters) and may swallow the physical keydown.
+ * So: synthetic events are ignored, and if a physical keyup arrives without
+ * its physical keydown, the hit is recovered from the keyup.
+ *
  * onTriggerPad / onReleasePad must be stable (useCallback) and padMap must be
  * defined outside the component, otherwise the listeners are re-attached on
  * every render.
@@ -61,22 +52,32 @@ export function useDrumKeyboard(
   useEffect(() => {
     if (!isEnabled) return undefined;
 
+    // Physical keys whose keydown reached the page since their last keyup.
+    const seenDown = new Set();
+
     const onKeyDown = (e) => {
-      if (e.repeat) return;
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      if (isTypingTarget(e.target)) return;
-      const pad = padMap.get(resolveCode(e));
+      if (!e.code || e.repeat) return;
+      seenDown.add(e.code);
+      if (isShortcutBlocked(e)) return;
+      const pad = padMap.get(e.code);
       if (!pad) return;
       e.preventDefault();
       onTriggerPad(pad.id);
     };
 
     const onKeyUp = (e) => {
+      if (!e.code) return;
+      const keydownArrived = seenDown.delete(e.code);
       const pad = padMap.get(e.code);
-      if (pad) onReleasePad?.(pad.id);
+      if (!pad) return;
+      if (!keydownArrived && !isShortcutBlocked(e)) {
+        onTriggerPad(pad.id);
+      }
+      onReleasePad?.(pad.id);
     };
 
     const onWindowBlur = () => {
+      seenDown.clear();
       for (const pad of padMap.values()) {
         onReleasePad?.(pad.id);
       }
