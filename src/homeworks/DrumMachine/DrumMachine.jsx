@@ -16,6 +16,8 @@ export function DrumMachine() {
   const levelTextRef = useRef(null);
   const [activePadIds, setActivePadIds] = useState([]);
   const [hits, setHits] = useState([]);
+  const [shortcutsEnabled, setShortcutsEnabled] = useState(true);
+  const shortcutsId = useId();
 
   useEffect(() => {
     synthRef.current = createDrumSynth();
@@ -58,13 +60,27 @@ export function DrumMachine() {
     );
   }, []);
 
-  useDrumKeyboard(PAD_BY_CODE, handlePress, true, handleRelease);
+  useDrumKeyboard(PAD_BY_CODE, handlePress, shortcutsEnabled, handleRelease);
+
+  const handleShortcutsChange = (e) => {
+    setShortcutsEnabled(e.target.checked);
+    if (!e.target.checked) setActivePadIds([]);
+  };
 
   const latestHit = hits[0]?.text ?? 'No hits yet';
 
   return (
     <section className={styles.drumMachine} aria-labelledby={headingId}>
       <h2 id={headingId}>Studio Drum Kit</h2>
+            <p className={styles.field}>
+        <input
+          id={shortcutsId}
+          type="checkbox"
+          checked={shortcutsEnabled}
+          onChange={handleShortcutsChange}
+        />
+        <label htmlFor={shortcutsId}>Keyboard shortcuts (W A S D J K L)</label>
+      </p>
       <ul className={styles.pads}>
         {DRUM_PADS.map((pad) => (
           <li key={pad.id}>
