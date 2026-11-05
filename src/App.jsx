@@ -10,8 +10,19 @@ const VIEWS = [
   { id: 'drum', label: 'Drum Kit (HW1)' },
 ];
 
+function readViewFromHash() {
+  return window.location.hash === '#drum' ? 'drum' : 'lab';
+}
+
 export function App() {
-  const [view, setView] = useState('lab');
+  const [view, setView] = useState(readViewFromHash);
+
+  const handleViewChange = (nextView) => {
+    setView(nextView);
+    const { pathname, search } = window.location;
+    const hash = nextView === 'drum' ? '#drum' : '';
+    window.history.replaceState(null, '', `${pathname}${search}${hash}`);
+  };
 
   return (
     <main>
@@ -24,7 +35,7 @@ export function App() {
                 type="button"
                 className={styles.viewButton}
                 aria-pressed={view === v.id}
-                onClick={() => setView(v.id)}
+                onClick={() => handleViewChange(v.id)}
               >
                 {v.label}
               </button>
