@@ -2,7 +2,7 @@ import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { DrumPad } from './DrumPad.jsx';
 import { useDrumKeyboard } from './useDrumKeyboard.js';
 import { DRUM_PADS, PAD_BY_CODE } from './drumPads.js';
-import { createDrumSynth } from './drumSynth.js';
+import { createDrumSynth, LEVEL_FLOOR_DB } from './drumSynth.js';
 import styles from './DrumMachine.module.css';
 
 const MAX_HITS = 8;
@@ -11,6 +11,9 @@ const PAD_BY_ID = new Map(DRUM_PADS.map((pad) => [pad.id, pad]));
 export function DrumMachine() {
   const headingId = useId();
   const synthRef = useRef(null);
+    const meterId = useId();
+  const meterRef = useRef(null);
+  const levelTextRef = useRef(null);
   const [activePadIds, setActivePadIds] = useState([]);
   const [hits, setHits] = useState([]);
 
@@ -20,6 +23,20 @@ export function DrumMachine() {
       synthRef.current?.dispose();
       synthRef.current = null;
     };
+  }, []);
+
+    useEffect(() => {
+    let frameId = 0;
+    const draw = () => {
+      const db = synthRef.current?.getLevelDb() ?? LEVEL_FLOOR_DB;
+      if (meterRef.current) meterRef.current.value = db;
+      if (levelTextRef.current) {
+        levelTextRef.current.textContent = `${Math.round(db)} dB`;
+      }
+      frameId = window.requestAnimationFrame(draw);
+    };
+    frameId = window.requestAnimationFrame(draw);
+    return () => window.cancelAnimationFrame(frameId);
   }, []);
 
   const handlePress = useCallback((padId) => {
@@ -60,6 +77,21 @@ export function DrumMachine() {
           </li>
         ))}
       </ul>
+        <p className={styles.meterGroup}>
+        <label htmlFor={meterId}>Output level</label>
+        <meter
+          id={meterId}
+          ref={meterRef}
+          className={styles.meter}
+          min={LEVEL_FLOOR_DB}
+          max={0}
+          low={-30}
+          high={-12}
+          optimum={-30}
+          value={LEVEL_FLOOR_DB}
+        />
+        <span ref={levelTextRef} />
+      </p>
       <section className={styles.log} aria-labelledby={`${headingId}-log`}>
         <h3 id={`${headingId}-log`}>Hit log</h3>
         <output aria-live="polite" aria-atomic="true">
