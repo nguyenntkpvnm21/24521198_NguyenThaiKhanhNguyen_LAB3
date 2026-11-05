@@ -110,25 +110,25 @@
 ```
 
 # Work Breakdown Structure (Homework 1)
-- [ ] Task H1.1: WBS and contract for Production Studio Drum Kit (docs commit)
-- [ ] Task H1.2: CSS Module scaffold with agreed class names (CSS only)
-- [ ] Task H1.3: Pad map keyed by e.code (data only)
-- [ ] Task H1.4: Web Audio drum synth engine (no audio files)
-- [ ] Task H1.5: useDrumKeyboard hook (e.code, repeat guard, input isolation, cleanup)
-- [ ] Task H1.6: DrumPad button with aria-pressed
-- [ ] Task H1.7: DrumMachine with active pads and hit log output
-- [ ] Task H1.8: Decibel meter with AnalyserNode
-- [ ] Task H1.9: Keyboard shortcuts toggle (WCAG 2.1.4)
-- [ ] Task H1.10: Mount DrumMachine in App as a separate view
-- [ ] Task H1.11: CSS layout, responsive 375px, focus ring, reduced motion (CSS only)
-- [ ] Task H1.12: Verification (Lighthouse, Accessibility tree, grep, lint) and AI failure notes
+- [x] Task H1.1: WBS and contract for Production Studio Drum Kit (docs commit)
+- [x] Task H1.2: CSS Module scaffold with agreed class names (CSS only)
+- [x] Task H1.3: Pad map keyed by e.code (data only)
+- [x] Task H1.4: Web Audio drum synth engine (no audio files)
+- [x] Task H1.5: useDrumKeyboard hook (e.code, repeat guard, input isolation, cleanup)
+- [x] Task H1.6: DrumPad button with aria-pressed
+- [x] Task H1.7: DrumMachine with active pads and hit log output
+- [x] Task H1.8: Decibel meter with AnalyserNode
+- [x] Task H1.9: Keyboard shortcuts toggle (WCAG 2.1.4)
+- [x] Task H1.10: Mount DrumMachine in App as a separate view
+- [x] Task H1.11: CSS layout, responsive 375px, focus ring, reduced motion (CSS only)
+- [x] Task H1.12: Verification (Lighthouse, Accessibility tree, grep, lint) and AI failure notes
 - [ ] Task H1.13: Push to GitHub and tag hw1-done
-- [ ] Task H1.14: Handle UniKey synthetic key events (empty e.code fallback)
-- [ ] Task H1.15: Do not block shortcuts when focus is on a checkbox or button
-- [ ] Task H1.16: Ignore IME synthetic events and recover swallowed keydown from physical keyup
-- [ ] Task H1.17: Keep a pad visually active for a minimum duration
-- [ ] Task H1.18: Open the Drum Kit view directly via #drum (Lighthouse audit target)
-- [ ] Task H1.19: Session name text field (proves shortcuts pause while typing)
+- [x] Task H1.14: Handle UniKey synthetic key events (empty e.code fallback)
+- [x] Task H1.15: Do not block shortcuts when focus is on a checkbox or button
+- [x] Task H1.16: Ignore IME synthetic events and recover swallowed keydown from physical keyup
+- [x] Task H1.17: Keep a pad visually active for a minimum duration
+- [x] Task H1.18: Open the Drum Kit view directly via #drum (Lighthouse audit target)
+- [x] Task H1.19: Session name text field (proves shortcuts pause while typing)
 
 * RULE: Never prompt AI with more than 1 sub-task at a time.
 * RULE: Commits contain JSX/JS only or CSS only, never both.
@@ -156,8 +156,16 @@
  *        cleanup = cancelAnimationFrame; no per-frame setState
  * Live region: one <output aria-live="polite" aria-atomic="true"> with the latest hit;
  *        the history <ol> is NOT live
- * CSS Module classes: drumMachine, controls, field, pads, pad, padActive, padKey,
+ * CSS Module classes: drumMachine, field, pads, pad, padActive, padKey,
  *        padName, meterGroup, meter, log, logList, logItem
  * Headings: section h2 via aria-labelledby, h3 for sub-sections, no h1, no div
  */
 ```
+
+### HW1 contract amendments (as built)
+- Extra classes in App.module.css: viewSwitch, viewButton (view switch in App).
+- Hook ignores events with empty e.code (IME synthetic) and recovers a swallowed keydown from keyup.
+- Input isolation: text-entry fields only; checkbox, radio and buttons do not block shortcuts.
+- A pad stays visually active for at least 120 ms (MIN_ACTIVE_MS).
+- Extra state: sessionName (text field proving input isolation).
+- App opens the Drum Kit view when the URL hash is #drum.
