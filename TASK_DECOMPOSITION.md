@@ -124,6 +124,7 @@
 - [ ] Task H1.12: Verification (Lighthouse, Accessibility tree, grep, lint) and AI failure notes
 - [ ] Task H1.13: Push to GitHub and tag hw1-done
 - [ ] Task H1.14: Handle UniKey synthetic key events (empty e.code fallback)
+- [ ] Task H1.15: Do not block shortcuts when focus is on a checkbox or button
 
 * RULE: Never prompt AI with more than 1 sub-task at a time.
 * RULE: Commits contain JSX/JS only or CSS only, never both.
