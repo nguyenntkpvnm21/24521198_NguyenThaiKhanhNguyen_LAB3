@@ -13,6 +13,7 @@ export function DrumMachine() {
   const headingId = useId();
   const meterId = useId();
   const shortcutsId = useId();
+  const sessionId = useId();
   const synthRef = useRef(null);
   const meterRef = useRef(null);
   const levelTextRef = useRef(null);
@@ -21,6 +22,7 @@ export function DrumMachine() {
   const [activePadIds, setActivePadIds] = useState([]);
   const [hits, setHits] = useState([]);
   const [shortcutsEnabled, setShortcutsEnabled] = useState(true);
+  const [sessionName, setSessionName] = useState('');
 
   useEffect(() => {
     synthRef.current = createDrumSynth();
@@ -113,6 +115,16 @@ export function DrumMachine() {
   return (
     <section className={styles.drumMachine} aria-labelledby={headingId}>
       <h2 id={headingId}>Studio Drum Kit</h2>
+            <p className={styles.field}>
+        <label htmlFor={sessionId}>Session name (shortcuts pause while typing)</label>
+        <input
+          id={sessionId}
+          type="text"
+          autoComplete="off"
+          value={sessionName}
+          onChange={(e) => setSessionName(e.target.value)}
+        />
+      </p>
       <p className={styles.field}>
         <input
           id={shortcutsId}
