@@ -123,6 +123,7 @@
 - [ ] Task H1.11: CSS layout, responsive 375px, focus ring, reduced motion (CSS only)
 - [ ] Task H1.12: Verification (Lighthouse, Accessibility tree, grep, lint) and AI failure notes
 - [ ] Task H1.13: Push to GitHub and tag hw1-done
+- [ ] Task H1.14: Handle UniKey synthetic key events (empty e.code fallback)
 
 * RULE: Never prompt AI with more than 1 sub-task at a time.
 * RULE: Commits contain JSX/JS only or CSS only, never both.
