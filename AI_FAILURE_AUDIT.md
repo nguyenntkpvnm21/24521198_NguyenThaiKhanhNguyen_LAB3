@@ -119,3 +119,24 @@ Entries are added as they are found across Lab 3.
 - **Lesson**: A spec claiming e.code is IME-safe is not proof. Test with the
   real IME, log the raw events before patching, and never design a fallback
   from the symptom of a single key.
+
+  ## Failure #05: Shortcuts blocked after clicking a checkbox (HW1)
+
+- **Prompt**: "Implement useDrumKeyboard(padMap, onTriggerPad, isEnabled) with
+  e.code, an e.repeat guard and input isolation, as in the HW1 contract."
+- **AI output**: An isolation guard that ignores every event whose target
+  tag is INPUT, TEXTAREA or SELECT, copied from the slide's reference hook.
+- **Bug**: A checkbox is also an INPUT. After toggling the "Keyboard
+  shortcuts" checkbox with the mouse, focus stayed on it, so every drum key
+  was ignored even though the checkbox was checked.
+- **Detection method**: Manual test: toggle the checkbox off and on with the
+  mouse, then press A, S and D.
+- **DevTools proof**: Screenshot of the Hit log not gaining any row after
+  pressing A, S and D while the checkbox had focus (in the submission PDF).
+- **Engineering fix (commit f51eae0)**: Only text-entry fields block the
+  shortcuts: textarea, select, contentEditable and input types that accept
+  text. Checkbox, radio, button and similar input types no longer block.
+- **Verification after fix**: With the checkbox focused, A and S play; typing
+  in the Session name field still plays nothing.
+- **Lesson**: Matching on tag name alone is too coarse for form controls.
+  Decide by whether the focused element accepts typed text.
