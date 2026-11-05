@@ -127,6 +127,7 @@
 - [ ] Task H1.15: Do not block shortcuts when focus is on a checkbox or button
 - [ ] Task H1.16: Ignore IME synthetic events and recover swallowed keydown from physical keyup
 - [ ] Task H1.17: Keep a pad visually active for a minimum duration
+- [ ] Task H1.18: Open the Drum Kit view directly via #drum (Lighthouse audit target)
 
 * RULE: Never prompt AI with more than 1 sub-task at a time.
 * RULE: Commits contain JSX/JS only or CSS only, never both.
