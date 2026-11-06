@@ -122,7 +122,7 @@
 - [x] Task H1.10: Mount DrumMachine in App as a separate view
 - [x] Task H1.11: CSS layout, responsive 375px, focus ring, reduced motion (CSS only)
 - [x] Task H1.12: Verification (Lighthouse, Accessibility tree, grep, lint) and AI failure notes
-- [ ] Task H1.13: Push to GitHub and tag hw1-done
+- [x] Task H1.13: Push to GitHub and tag hw1-done
 - [x] Task H1.14: Handle UniKey synthetic key events (empty e.code fallback)
 - [x] Task H1.15: Do not block shortcuts when focus is on a checkbox or button
 - [x] Task H1.16: Ignore IME synthetic events and recover swallowed keydown from physical keyup
