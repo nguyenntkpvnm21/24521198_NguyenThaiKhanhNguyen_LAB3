@@ -1,0 +1,68 @@
+/* Scaffold: class names from the HW2 contract. Layout comes in Task H2.9. */
+.grandPiano {
+  display: block;
+}
+
+.controls {
+  display: block;
+}
+
+.field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space);
+}
+
+.transport {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space);
+}
+
+.button {
+  font: inherit;
+}
+
+.status {
+  display: block;
+}
+
+.keyboard {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.keyItem {
+  display: block;
+}
+
+.whiteItem {
+  display: block;
+}
+
+.blackItem {
+  display: block;
+}
+
+.key {
+  font: inherit;
+}
+
+.keyWhite {
+  display: block;
+}
+
+.keyBlack {
+  display: block;
+}
+
+.keyPressed {
+  display: block;
+}
+
+.keyName {
+  display: inline;
+}
