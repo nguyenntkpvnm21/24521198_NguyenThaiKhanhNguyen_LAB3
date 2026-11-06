@@ -36,6 +36,14 @@ export class PolyphonicSynth {
   noteOn(midi, freqHz) {
     if (this.voices.has(midi)) return { started: false, stolenMidi: null };
     const ctx = this.ensureContext();
+
+    // FIFO voice stealing: the Map keeps insertion order, so the first key is the oldest.
+    let stolenMidi = null;
+    if (this.voices.size >= this.maxVoices) {
+      stolenMidi = this.voices.keys().next().value;
+      this.noteOff(stolenMidi);
+    }
+
     const t = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -50,7 +58,7 @@ export class PolyphonicSynth {
     osc.connect(gain).connect(this.master);
     osc.start(t);
     this.voices.set(midi, { osc, gain });
-    return { started: true, stolenMidi: null };
+    return { started: true, stolenMidi };
   }
 
   /** @returns {boolean} true if a sounding voice was released */
@@ -71,5 +79,27 @@ export class PolyphonicSynth {
       gain.disconnect();
     };
     return true;
+  }
+
+  /** Release every held voice. @returns {number[]} the released midi numbers */
+  allNotesOff() {
+    const released = [...this.voices.keys()];
+    for (const midi of released) {
+      this.noteOff(midi);
+    }
+    return released;
+  }
+
+  /** Free all audio resources. Safe to call more than once (StrictMode runs cleanups twice in dev). */
+  dispose() {
+    if (this.ctx === null) return;
+    for (const { osc, gain } of this.voices.values()) {
+      osc.disconnect();
+      gain.disconnect();
+    }
+    this.voices.clear();
+    this.ctx.close();
+    this.ctx = null;
+    this.master = null;
   }
 }
