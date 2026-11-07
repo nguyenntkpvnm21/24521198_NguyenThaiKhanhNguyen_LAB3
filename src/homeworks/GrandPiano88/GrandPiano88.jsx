@@ -3,9 +3,11 @@ import { NoteQueue } from './NoteQueue.js';
 import { PianoKey } from './PianoKey.jsx';
 import { PolyphonicSynth } from './PolyphonicSynth.js';
 import { PIANO_NOTES } from './pianoKeys.js';
+import { playSequence } from './playSequence.js';
 import styles from './GrandPiano88.module.css';
 
 const NOTE_BY_MIDI = new Map(PIANO_NOTES.map((note) => [note.midi, note]));
+const SPEEDS = [0.5, 1, 2];
 
 /*
  * Recorder state lives in a ref, not in React state: it changes on every note
@@ -40,16 +42,22 @@ function closeOpenNotes(recorder, now) {
 export function GrandPiano88() {
   const headingId = useId();
   const sequencerId = useId();
+  const speedId = useId();
   const synthRef = useRef(null);
   const recorderRef = useRef(null);
+  const abortRef = useRef(null);
   const [pressedMidis, setPressedMidis] = useState(() => new Set());
   const [mode, setMode] = useState('IDLE');
   const [recording, setRecording] = useState([]);
+  const [speed, setSpeed] = useState(1);
 
   useEffect(() => {
     const synth = new PolyphonicSynth();
     synthRef.current = synth;
     return () => {
+      // Unmount: cancel every scheduled replay promise, then silence and free audio.
+      abortRef.current?.abort();
+      abortRef.current = null;
       synth.dispose();
       synthRef.current = null;
     };
@@ -105,10 +113,43 @@ export function GrandPiano88() {
     setMode('IDLE');
   };
 
-  const statusText =
-    mode === 'RECORDING'
-      ? 'Recording... play some keys'
-      : `Recorded notes: ${recording.length}`;
+  const handlePlay = () => {
+    if (recording.length === 0) return;
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setMode('PLAYING');
+    playSequence(recording, {
+      speed,
+      signal: controller.signal,
+      onNoteOn: handleNoteOn,
+      onNoteOff: handleNoteOff,
+    }).then(() => {
+      // Only the replay that is still current may reset the mode.
+      if (abortRef.current === controller) {
+        abortRef.current = null;
+        setMode('IDLE');
+      }
+    });
+  };
+
+  const handleStopSequence = () => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    synthRef.current?.allNotesOff();
+    setPressedMidis(new Set());
+    setMode('IDLE');
+  };
+
+  const handleSpeedChange = (e) => {
+    const next = Number(e.target.value);
+    if (!Number.isNaN(next)) setSpeed(next);
+  };
+
+  let statusText = `Recorded notes: ${recording.length}`;
+  if (mode === 'RECORDING') statusText = 'Recording... play some keys';
+  if (mode === 'PLAYING') {
+    statusText = `Playing ${recording.length} notes at ${speed}x`;
+  }
 
   return (
     <section className={styles.grandPiano} aria-labelledby={headingId}>
@@ -132,6 +173,37 @@ export function GrandPiano88() {
           >
             Stop Recording
           </button>
+          <button
+            type="button"
+            className={styles.button}
+            disabled={mode !== 'IDLE' || recording.length === 0}
+            onClick={handlePlay}
+          >
+            Play
+          </button>
+          <button
+            type="button"
+            className={styles.button}
+            disabled={mode !== 'PLAYING'}
+            onClick={handleStopSequence}
+          >
+            Stop Sequence
+          </button>
+        </p>
+        <p className={styles.field}>
+          <label htmlFor={speedId}>Speed</label>
+          <select
+            id={speedId}
+            value={speed}
+            disabled={mode !== 'IDLE'}
+            onChange={handleSpeedChange}
+          >
+            {SPEEDS.map((s) => (
+              <option key={s} value={s}>
+                {s}x
+              </option>
+            ))}
+          </select>
         </p>
         <output className={styles.status} aria-live="polite" aria-atomic="true">
           {statusText}
