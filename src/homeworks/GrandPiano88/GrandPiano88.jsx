@@ -43,13 +43,16 @@ export function GrandPiano88() {
   const headingId = useId();
   const sequencerId = useId();
   const speedId = useId();
+  const sustainId = useId();
   const synthRef = useRef(null);
   const recorderRef = useRef(null);
   const abortRef = useRef(null);
+  const sustainRef = useRef(false);
   const [pressedMidis, setPressedMidis] = useState(() => new Set());
   const [mode, setMode] = useState('IDLE');
   const [recording, setRecording] = useState([]);
   const [speed, setSpeed] = useState(1);
+  const [sustain, setSustain] = useState(false);
 
   useEffect(() => {
     const synth = new PolyphonicSynth();
@@ -63,8 +66,9 @@ export function GrandPiano88() {
     };
   }, []);
 
-  // Stable callbacks (empty deps): they read the synth and recorder from refs and
-  // update state with the functional form, so React.memo on PianoKey can skip renders.
+  // Stable callbacks (empty deps): they read the synth, recorder and sustain flag
+  // from refs and update state with the functional form, so React.memo on
+  // PianoKey can skip renders.
   const handleNoteOn = useCallback((midi) => {
     const note = NOTE_BY_MIDI.get(midi);
     const synth = synthRef.current;
@@ -87,7 +91,8 @@ export function GrandPiano88() {
 
   const handleNoteOff = useCallback((midi) => {
     const synth = synthRef.current;
-    if (!synth || !synth.noteOff(midi)) return;
+    if (!synth || sustainRef.current) return;
+    if (!synth.noteOff(midi)) return;
     const recorder = recorderRef.current;
     if (recorder) recordNoteEnd(recorder, midi, performance.now());
     setPressedMidis((prev) => {
@@ -145,6 +150,16 @@ export function GrandPiano88() {
     if (!Number.isNaN(next)) setSpeed(next);
   };
 
+  const handleSustainChange = (e) => {
+    const enabled = e.target.checked;
+    sustainRef.current = enabled;
+    setSustain(enabled);
+    if (!enabled) {
+      synthRef.current?.allNotesOff();
+      setPressedMidis(new Set());
+    }
+  };
+
   let statusText = `Recorded notes: ${recording.length}`;
   if (mode === 'RECORDING') statusText = 'Recording... play some keys';
   if (mode === 'PLAYING') {
@@ -160,7 +175,7 @@ export function GrandPiano88() {
           <button
             type="button"
             className={styles.button}
-            disabled={mode !== 'IDLE'}
+            disabled={mode !== 'IDLE' || sustain}
             onClick={handleRecordStart}
           >
             Record
@@ -176,7 +191,7 @@ export function GrandPiano88() {
           <button
             type="button"
             className={styles.button}
-            disabled={mode !== 'IDLE' || recording.length === 0}
+            disabled={mode !== 'IDLE' || sustain || recording.length === 0}
             onClick={handlePlay}
           >
             Play
@@ -204,6 +219,18 @@ export function GrandPiano88() {
               </option>
             ))}
           </select>
+        </p>
+        <p className={styles.field}>
+          <input
+            id={sustainId}
+            type="checkbox"
+            checked={sustain}
+            disabled={mode !== 'IDLE'}
+            onChange={handleSustainChange}
+          />
+          <label htmlFor={sustainId}>
+            Sustain (hold notes; turn off to record or play)
+          </label>
         </p>
         <output className={styles.status} aria-live="polite" aria-atomic="true">
           {statusText}
