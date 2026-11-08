@@ -172,24 +172,24 @@
 
 # Work Breakdown Structure (Homework 2)
 
-- [ ] Task H2.1: Add HW2 WBS and contract (docs)
-- [ ] Task H2.2: Add GrandPiano88 CSS module scaffold (CSS only, class names from contract)
-- [ ] Task H2.3: Generate the 88 notes algorithmically (pianoKeys.js: MIDI 21-108, frequency, note name, isBlack)
-- [ ] Task H2.4: PolyphonicSynth voice pool with click-free ADSR (noteOn, noteOff, master gain, lazy AudioContext)
-- [ ] Task H2.5: FIFO voice stealing at 8 voices, allNotesOff and idempotent dispose
-- [ ] Task H2.6: PianoKey with React.memo, pointer and keyboard (Enter/Space) handling
-- [ ] Task H2.7: GrandPiano88 component: render 88 keys, stable callbacks, synth lifecycle
-- [ ] Task H2.8: Mount GrandPiano88 in App as a separate view via #piano
-- [ ] Task H2.9: Keyboard layout CSS (white and black keys, scroll container)
-- [ ] Task H2.10: NoteQueue (FIFO) for recorded notes
-- [ ] Task H2.11: Record notes into the FIFO queue (Record / Stop Recording)
-- [ ] Task H2.12: Abortable playSequence engine with 0.5x / 1x / 2x speed
-- [ ] Task H2.13: Transport UI: Play, Stop Sequence, speed select, mode state machine, abort on stop and unmount
-- [ ] Task H2.14: Sustain toggle so 9 simultaneous notes can be demonstrated with a mouse
-- [ ] Task H2.15: Responsive 375px CSS, focus ring and reduced motion
-- [ ] Task H2.16: Verify (Profiler isolation, forbidden scan, lint, build, Lighthouse)
-- [ ] Task H2.17: Add AI_FAILURE_AUDIT entries for real HW2 failures only
-- [ ] Task H2.18: Mark HW2 tasks done and update contract (as built)
+- [x] Task H2.1: Add HW2 WBS and contract (docs)
+- [x] Task H2.2: Add GrandPiano88 CSS module scaffold (CSS only, class names from contract)
+- [x] Task H2.3: Generate the 88 notes algorithmically (pianoKeys.js: MIDI 21-108, frequency, note name, isBlack)
+- [x] Task H2.4: PolyphonicSynth voice pool with click-free ADSR (noteOn, noteOff, master gain, lazy AudioContext)
+- [x] Task H2.5: FIFO voice stealing at 8 voices, allNotesOff and idempotent dispose
+- [x] Task H2.6: PianoKey with React.memo, pointer and keyboard (Enter/Space) handling
+- [x] Task H2.7: GrandPiano88 component: render 88 keys, stable callbacks, synth lifecycle
+- [x] Task H2.8: Mount GrandPiano88 in App as a separate view via #piano
+- [x] Task H2.9: Keyboard layout CSS (white and black keys, scroll container)
+- [x] Task H2.10: NoteQueue (FIFO) for recorded notes
+- [x] Task H2.11: Record notes into the FIFO queue (Record / Stop Recording)
+- [x] Task H2.12: Abortable playSequence engine with 0.5x / 1x / 2x speed
+- [x] Task H2.13: Transport UI: Play, Stop Sequence, speed select, mode state machine, abort on stop and unmount
+- [x] Task H2.14: Sustain toggle so 9 simultaneous notes can be demonstrated with a mouse
+- [x] Task H2.15: Responsive 375px CSS, focus ring and reduced motion
+- [x] Task H2.16: Verify (Profiler isolation, forbidden scan, lint, build, Lighthouse)
+- [x] Task H2.17: Add AI_FAILURE_AUDIT entries for real HW2 failures only (no entry added: no real AI failure was observed in HW2)
+- [x] Task H2.18: Mark HW2 tasks done and update contract (as built)
 - [ ] Task H2.19: Push to GitHub and tag hw2-done
 
 * RULE: Never prompt AI with more than 1 sub-task at a time.
@@ -250,3 +250,14 @@
 // Layout: keyboard is a horizontally scrollable <ul>; black key <li> has zero width and its
 // button is centered on the boundary between two white keys. No inline style, no hardcoded hex.
 ```
+
+### HW2 contract amendments (as built)
+
+- Engine files live in `src/homeworks/GrandPiano88/` next to the component, not in `src/audio/` as in the slide sample.
+- `PolyphonicSynth`: the slide sample calls `this.noteOff()` but never defines it. Added `noteOff`, a master gain (0.5), attack/decay/sustain/release, `allNotesOff` and `dispose`. `noteOn` returns `{ started, stolenMidi }` so the UI can clear the key that was stolen.
+- `PianoKey`: added `onPointerLeave`, `onPointerCancel`, `onBlur` and Enter/Space handlers. The slide sample only has pointer down/up, which cannot be used with a keyboard.
+- Task H2.14 (Sustain checkbox) goes beyond the slide. A mouse cannot hold 9 keys at once, so Sustain is the only way to demonstrate FIFO voice stealing on desktop. Record and Play are disabled while Sustain is on, and `handleNoteOff` reads it through `sustainRef` so the callback stays stable for `React.memo`.
+- `playSequence`: note starts follow an absolute timeline from `performance.now()` (no accumulated drift); each release is timed from the note's actual start (`durationMs / speed`).
+- Layout: black keys are zero-width list items whose buttons are absolutely positioned, so no inline styles are needed.
+- Forbidden-pattern scan: `keypress` became `keypress(?!ed)` because the class name `keyPressed` matched the case-insensitive pattern.
+- Known limitations: 88 keys are 88 Tab stops (no roving tabindex), and dragging across keys does not glissando because each key needs its own press.
