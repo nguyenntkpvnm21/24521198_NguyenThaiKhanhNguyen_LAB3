@@ -1,14 +1,20 @@
 import { useEffect, useState } from 'react';
 
+const TICK_MS = 200;
+
+/**
+ * Countdown based on an absolute target time, not on counting ticks.
+ * The state holds only the local clock; nowMs and remainingMs are derived in render.
+ * @param {number} targetEpochMs
+ * @param {number} [serverOffsetMs]
+ * @returns {{ nowMs: number, remainingMs: number, isLive: boolean }}
+ */
 export function usePubgAirdropTimer(targetEpochMs, serverOffsetMs = 0) {
-  const calcRemaining = () =>
-    Math.max(0, targetEpochMs - (Date.now() + serverOffsetMs));
-  const [remainingMs, setRemainingMs] = useState(calcRemaining);
+  const [localNowMs, setLocalNowMs] = useState(() => Date.now());
 
   useEffect(() => {
-    const syncClock = () => setRemainingMs(calcRemaining());
-    syncClock();
-    const timerId = window.setInterval(syncClock, 200);
+    const syncClock = () => setLocalNowMs(Date.now());
+    const timerId = window.setInterval(syncClock, TICK_MS);
     const onWake = () => {
       if (document.visibilityState === 'visible') syncClock();
     };
@@ -17,7 +23,9 @@ export function usePubgAirdropTimer(targetEpochMs, serverOffsetMs = 0) {
       window.clearInterval(timerId);
       document.removeEventListener('visibilitychange', onWake);
     };
-  }, [targetEpochMs, serverOffsetMs]);
+  }, []);
 
-  return { remainingMs, isLive: remainingMs === 0 };
+  const nowMs = localNowMs + serverOffsetMs;
+  const remainingMs = Math.max(0, targetEpochMs - nowMs);
+  return { nowMs, remainingMs, isLive: remainingMs === 0 };
 }
