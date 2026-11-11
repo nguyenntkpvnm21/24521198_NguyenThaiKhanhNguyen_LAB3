@@ -4,6 +4,7 @@ import { ScientistDirectory } from './components/ScientistDirectory.jsx';
 import { PubgMatchTelemetry } from './components/PubgMatchTelemetry.jsx';
 import { DrumMachine } from './homeworks/DrumMachine/DrumMachine.jsx';
 import { GrandPiano88 } from './homeworks/GrandPiano88/GrandPiano88.jsx';
+import { KraftonPubgVnArena } from './homeworks/KraftonPubgVnArena/KraftonPubgVnArena.jsx';
 import styles from './App.module.css';
 
 function LabExercises() {
@@ -37,6 +38,13 @@ const VIEWS = [
     title: 'Piano Studio',
     hash: '#piano',
     Content: GrandPiano88,
+  },
+  {
+    id: 'arena',
+    label: 'PUBG VN Arena (HW3)',
+    title: 'PUBG Vietnam Arena',
+    hash: '#arena',
+    Content: KraftonPubgVnArena,
   },
 ];
 
