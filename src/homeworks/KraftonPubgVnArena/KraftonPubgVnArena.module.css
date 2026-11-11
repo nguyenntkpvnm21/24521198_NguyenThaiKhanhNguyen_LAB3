@@ -1,0 +1,69 @@
+/* KraftonPubgVnArena scaffold: class names from the HW3 contract.
+   Layout, responsive rules, focus ring and animation come in Task H3.12. */
+
+.arena {
+  display: block;
+}
+
+.panel {
+  display: block;
+  padding: var(--space);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  color: var(--text-primary);
+}
+
+.crateList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.crate {
+  display: block;
+}
+
+.crateTitle {
+  margin: 0;
+}
+
+.details {
+  margin: 0;
+}
+
+.countdown {
+  font-variant-numeric: tabular-nums;
+}
+
+.stock {
+  margin: 0;
+}
+
+.status {
+  display: block;
+}
+
+.claimButton {
+  cursor: pointer;
+}
+
+.filters {
+  display: block;
+}
+
+.field {
+  display: block;
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rank {
+  text-align: right;
+}
