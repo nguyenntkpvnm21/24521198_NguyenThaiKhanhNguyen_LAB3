@@ -279,6 +279,7 @@
 - [ ] Task H3.11: Optimistic claim, 409 rollback and in-flight claimId lock
 - [ ] Task H3.12: Responsive 375px CSS, focus ring and reduced motion (CSS only)
 - [ ] Task H3.13: Verify (background tab resync, 409 rollback, double click, Lighthouse, forbidden scan, lint, build)
+- [ ] Task H3.13a: Show the phase label after a successful claim so LOOTED_OUT is visible (fix)
 - [ ] Task H3.14: Add AI_FAILURE_AUDIT entries for real HW3 failures only
 - [ ] Task H3.15: Mark HW3 tasks done and update contract (as built)
 - [ ] Task H3.16: Push to GitHub and tag hw3-done
