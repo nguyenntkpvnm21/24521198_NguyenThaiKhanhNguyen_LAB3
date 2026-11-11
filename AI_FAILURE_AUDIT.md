@@ -140,3 +140,33 @@ Entries are added as they are found across Lab 3.
   in the Session name field still plays nothing.
 - **Lesson**: Matching on tag name alone is too coarse for form controls.
   Decide by whether the focused element accepts typed text.
+
+  ## Failure #06: Phase label hidden after a claim (HW3)
+
+- **Prompt**: Task H3.7: build CrateCard showing countdown, price, stock,
+  a derived DropPhase and a Claim button, with one polite output for the
+  claim message or the phase label.
+- **AI output**: statusText was chosen with
+  `claim.status === 'IDLE' ? PHASE_LABELS[phase] : claim.message`.
+- **Bug**: After the first claim, claim.status never returns to 'IDLE', so
+  the output always shows the claim message and never the phase label. The
+  derived LOOTED_OUT phase was computed correctly (stock 0, button
+  disabled) but users could not see it, so one of the four DropPhase
+  states was invisible in the UI.
+- **Detection method**: Manual test after reload: claimed the last crate
+  twice (first claim returns the deterministic 409, second succeeds).
+  Compared the visible text with the phase expected by the contract.
+- **DevTools proof**: A screenshot of the crate card after the second claim
+  (stock 0, Claim button disabled, status text only "Claimed
+  successfully") is in the submission PDF.
+- **Engineering fix (commit <hash>)**: Append the phase label to the
+  message when the claim succeeded and the phase is LOOTED_OUT or EXPIRED.
+  The label is not added while the claim is PENDING, because the optimistic
+  stock of 0 would briefly read as "Looted out" before a 409 restores it.
+- **Verification after fix**: Reloaded and repeated the two claims. The
+  first shows the 409 message with stock restored to 1; the second shows
+  "Claimed successfully. Looted out". A screenshot is in the submission
+  PDF.
+- **Lesson**: A status line built from only one source of truth (claim
+  state) can hide a state derived from another (phase). Test every value of
+  the derived enum in the real UI, not only that the derivation is correct.
