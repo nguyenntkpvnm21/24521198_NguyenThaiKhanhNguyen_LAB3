@@ -1,7 +1,7 @@
-import { useEffect, useId, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { CrateCard } from './CrateCard.jsx';
 import { Leaderboard } from './Leaderboard.jsx';
-import { fetchServerOffset } from './arenaApi.js';
+import { claimCrate, fetchServerOffset } from './arenaApi.js';
 import {
   SERVER_SKEW_MS,
   SQUAD_STANDINGS,
@@ -11,22 +11,23 @@ import styles from './KraftonPubgVnArena.module.css';
 
 const IDLE_CLAIM = { status: 'IDLE', message: '' };
 
-// Placeholder until Task H3.11 adds the optimistic claim handler.
-const handleClaimPlaceholder = () => {};
-
 export function KraftonPubgVnArena() {
   const headingId = useId();
   const [drops] = useState(() => createDemoDrops(Date.now() + SERVER_SKEW_MS));
-  const [stocks] = useState(() =>
+  const [stocks, setStocks] = useState(() =>
     Object.fromEntries(drops.map((d) => [d.id, d.remainingStock])),
   );
-  const [claims] = useState(() =>
+  const [claims, setClaims] = useState(() =>
     Object.fromEntries(drops.map((d) => [d.id, IDLE_CLAIM])),
   );
   const [serverOffsetMs, setServerOffsetMs] = useState(0);
 
+  const claimAbortRef = useRef(null);
+  const inFlightRef = useRef(new Map());
+
   useEffect(() => {
     const controller = new AbortController();
+    claimAbortRef.current = controller;
     fetchServerOffset({ signal: controller.signal })
       .then((offset) => setServerOffsetMs(offset))
       .catch((err) => {
@@ -34,6 +35,44 @@ export function KraftonPubgVnArena() {
         // Any other failure keeps the local clock (offset 0).
       });
     return () => controller.abort();
+  }, []);
+
+  const handleClaim = useCallback((crateId) => {
+    const inFlight = inFlightRef.current;
+    if (inFlight.has(crateId)) return;
+
+    const claimId = crypto.randomUUID();
+    inFlight.set(crateId, claimId);
+
+    setStocks((prev) => ({ ...prev, [crateId]: prev[crateId] - 1 }));
+    setClaims((prev) => ({
+      ...prev,
+      [crateId]: { status: 'PENDING', message: 'Claiming...' },
+    }));
+
+    const rollback = (message, status) => {
+      setStocks((prev) => ({ ...prev, [crateId]: prev[crateId] + 1 }));
+      setClaims((prev) => ({ ...prev, [crateId]: { status, message } }));
+    };
+
+    claimCrate(crateId, claimId, { signal: claimAbortRef.current.signal })
+      .then(() => {
+        setClaims((prev) => ({
+          ...prev,
+          [crateId]: { status: 'SUCCESS', message: 'Claimed successfully' },
+        }));
+      })
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
+        if (err.status === 409) {
+          rollback('Looted Out (409): stock restored', 'CONFLICT');
+        } else {
+          rollback('Claim failed: stock restored', 'CONFLICT');
+        }
+      })
+      .finally(() => {
+        inFlight.delete(crateId);
+      });
   }, []);
 
   return (
@@ -47,7 +86,7 @@ export function KraftonPubgVnArena() {
               stock={stocks[crate.id]}
               claim={claims[crate.id]}
               serverOffsetMs={serverOffsetMs}
-              onClaim={handleClaimPlaceholder}
+              onClaim={handleClaim}
             />
           </li>
         ))}
