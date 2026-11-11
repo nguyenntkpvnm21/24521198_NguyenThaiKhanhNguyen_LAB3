@@ -1,34 +1,61 @@
-/* KraftonPubgVnArena scaffold: class names from the HW3 contract.
-   Layout, responsive rules, focus ring and animation come in Task H3.12. */
-
 .arena {
-  display: block;
+  display: grid;
+  gap: var(--space);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .panel {
-  display: block;
+  display: grid;
+  gap: var(--space);
+  min-width: 0;
   padding: var(--space);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
   border-radius: var(--radius);
   background: var(--card-bg);
   color: var(--text-primary);
 }
 
 .crateList {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .crate {
-  display: block;
+  display: grid;
+  gap: calc(var(--space) / 2);
+  min-width: 0;
+  height: 100%;
+  padding: var(--space);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  color: var(--text-primary);
 }
 
 .crateTitle {
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .details {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: calc(var(--space) / 4) var(--space);
   margin: 0;
+}
+
+.details dt {
+  opacity: 0.8;
+}
+
+.details dd {
+  margin: 0;
+  font-weight: 600;
 }
 
 .countdown {
@@ -37,33 +64,122 @@
 
 .stock {
   margin: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .status {
   display: block;
+  min-height: 1.5em;
+  overflow-wrap: anywhere;
 }
 
 .claimButton {
+  min-height: 2.75rem;
+  padding: 0 var(--space);
+  border: 1px solid var(--accent);
+  border-radius: calc(var(--radius) / 2);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font: inherit;
+  font-weight: 600;
   cursor: pointer;
 }
 
+.claimButton:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 85%, transparent);
+}
+
+.claimButton:disabled {
+  background: transparent;
+  color: var(--text-primary);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .filters {
-  display: block;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: calc(var(--space) / 2);
 }
 
 .field {
-  display: block;
+  display: grid;
+  gap: calc(var(--space) / 4);
+  min-width: 0;
+  margin: 0;
+}
+
+.field input,
+.field select {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 calc(var(--space) / 2);
+  border: 1px solid var(--accent);
+  border-radius: calc(var(--radius) / 2);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font: inherit;
 }
 
 .tableScroll {
+  max-width: 100%;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 .table {
   width: 100%;
+  min-width: 22rem;
   border-collapse: collapse;
 }
 
+.table caption {
+  padding-bottom: calc(var(--space) / 2);
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: calc(var(--space) / 2);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  text-align: left;
+}
+
 .rank {
+  font-variant-numeric: tabular-nums;
   text-align: right;
+}
+
+.table th.rank,
+.table td.rank {
+  text-align: right;
+}
+
+.claimButton:focus-visible,
+.field input:focus-visible,
+.field select:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tableScroll:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+
+@media (min-width: 40rem) {
+  .crateList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .claimButton {
+    transition: background-color 0.15s ease;
+  }
 }
