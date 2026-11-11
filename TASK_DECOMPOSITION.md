@@ -269,6 +269,8 @@
 - [ ] Task H3.3: Add arena data: three crate drops and four squad standings (data only)
 - [ ] Task H3.4: Add pure helpers: formatVnd, formatCountdown, getDropPhase, getVisibleStandings
 - [ ] Task H3.5: Add usePubgAirdropTimer as in the slide, then run lint and record real findings
+- [ ] Task H3.5a: Fix exhaustive-deps warning in usePubgAirdropTimer (lint fix)
+- [ ] Task H3.5b: Return nowMs from usePubgAirdropTimer so EXPIRED can be derived
 - [ ] Task H3.6: Add simulated API: abortable wait, fetchServerOffset, claimCrate with deterministic 409
 - [ ] Task H3.7: Add CrateCard: countdown, derived phase, VND price, stock, claim button
 - [ ] Task H3.8: Add Leaderboard: name filter, min kill points, sort select, derived with toSorted
