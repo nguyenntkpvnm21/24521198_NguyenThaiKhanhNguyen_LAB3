@@ -264,24 +264,24 @@
 
 # Work Breakdown Structure (Homework 3)
 
-- [ ] Task H3.1: Add HW3 WBS and contract (docs)
-- [ ] Task H3.2: Add KraftonPubgVnArena CSS module scaffold (CSS only, class names from contract)
-- [ ] Task H3.3: Add arena data: three crate drops and four squad standings (data only)
-- [ ] Task H3.4: Add pure helpers: formatVnd, formatCountdown, getDropPhase, getVisibleStandings
-- [ ] Task H3.5: Add usePubgAirdropTimer as in the slide, then run lint and record real findings
-- [ ] Task H3.5a: Fix exhaustive-deps warning in usePubgAirdropTimer (lint fix)
-- [ ] Task H3.5b: Return nowMs from usePubgAirdropTimer so EXPIRED can be derived
-- [ ] Task H3.6: Add simulated API: abortable wait, fetchServerOffset, claimCrate with deterministic 409
-- [ ] Task H3.7: Add CrateCard: countdown, derived phase, VND price, stock, claim button
-- [ ] Task H3.8: Add Leaderboard: name filter, min kill points, sort select, derived with toSorted
-- [ ] Task H3.9: Add KraftonPubgVnArena shell: render crates and leaderboard, load server offset with AbortController
-- [ ] Task H3.10: Mount KraftonPubgVnArena in App as a separate view via #arena
-- [ ] Task H3.11: Optimistic claim, 409 rollback and in-flight claimId lock
-- [ ] Task H3.12: Responsive 375px CSS, focus ring and reduced motion (CSS only)
-- [ ] Task H3.13: Verify (background tab resync, 409 rollback, double click, Lighthouse, forbidden scan, lint, build)
-- [ ] Task H3.13a: Show the phase label after a successful claim so LOOTED_OUT is visible (fix)
-- [ ] Task H3.14: Add AI_FAILURE_AUDIT entries for real HW3 failures only
-- [ ] Task H3.15: Mark HW3 tasks done and update contract (as built)
+- [x] Task H3.1: Add HW3 WBS and contract (docs)
+- [x] Task H3.2: Add KraftonPubgVnArena CSS module scaffold (CSS only, class names from contract)
+- [x] Task H3.3: Add arena data: three crate drops and four squad standings (data only)
+- [x] Task H3.4: Add pure helpers: formatVnd, formatCountdown, getDropPhase, getVisibleStandings
+- [x] Task H3.5: Add usePubgAirdropTimer as in the slide, then run lint and record real findings
+- [x] Task H3.5a: Fix exhaustive-deps warning in usePubgAirdropTimer (lint fix)
+- [x] Task H3.5b: Return nowMs from usePubgAirdropTimer so EXPIRED can be derived
+- [x] Task H3.6: Add simulated API: abortable wait, fetchServerOffset, claimCrate with deterministic 409
+- [x] Task H3.7: Add CrateCard: countdown, derived phase, VND price, stock, claim button
+- [x] Task H3.8: Add Leaderboard: name filter, min kill points, sort select, derived with toSorted
+- [x] Task H3.9: Add KraftonPubgVnArena shell: render crates and leaderboard, load server offset with AbortController
+- [x] Task H3.10: Mount KraftonPubgVnArena in App as a separate view via #arena
+- [x] Task H3.11: Optimistic claim, 409 rollback and in-flight claimId lock
+- [x] Task H3.12: Responsive 375px CSS, focus ring and reduced motion (CSS only)
+- [x] Task H3.13: Verify (background tab resync, 409 rollback, double click, Lighthouse, forbidden scan, lint, build)
+- [x] Task H3.13a: Show the phase label after a successful claim so LOOTED_OUT is visible (fix)
+- [x] Task H3.14: Add AI_FAILURE_AUDIT entries for real HW3 failures only (one entry added: #06)
+- [x] Task H3.15: Mark HW3 tasks done and update contract (as built)
 - [ ] Task H3.16: Push to GitHub and tag hw3-done
 
 * RULE: Never prompt AI with more than 1 sub-task at a time.
@@ -353,3 +353,18 @@
 // filters, field, tableScroll, table, rank
 // Headings: section h2 via aria-labelledby, h3 per crate and leaderboard, no h1, no div, key={crate.id} / key={squadId}.
 ```
+
+### HW3 contract amendments (as built)
+
+- No virtual list: the slide mentions the Slide 22 Virtual Scroller only as the idea's origin; there are only 3 crates and 4 squads.
+- Hook and engine files live in `src/homeworks/KraftonPubgVnArena/` (not `src/hooks/` as in the slide sample).
+- Squad ids are `te | ces | roy | agg`. The slide contract lists `ge` but names Roy Esports and AGG, so Roy Esports uses `roy`. Standings numbers are invented demo data.
+- `usePubgAirdropTimer`: the slide version triggered a real lint warning (`react-hooks/exhaustive-deps`, missing `calcRemaining`; screenshot in the submission PDF). The built hook keeps only the local clock in state, derives `nowMs` and `remainingMs` in render, and returns `nowMs` so `EXPIRED` can be derived. `isLive` keeps the slide meaning (remaining is 0) and is not a phase.
+- The slide says "monotonic" but uses `Date.now()`, a wall clock. `serverOffsetMs` is a simulated one-time offset (+1500 ms). Changing the system clock during a drop would shift the countdown.
+- Phase is derived by `getDropPhase`, never stored. Claim window is 2 minutes; the three drops open 20 to 30 seconds after the page loads.
+- The 409 is deterministic: only the first claim of `last-crate` per page load returns 409 (module counter), so a reload is needed to see it again. Switching views does not reset it.
+- Double click is blocked by two layers: the disabled button while PENDING and a synchronous `inFlightRef` Map keyed by crate id holding the `claimId`.
+- Rollback and claim updates use the functional form of `setState`; `AbortError` is ignored.
+- Leaderboard "kill-feed filter" was not described in the slide. Built as name search, Min Kill Points (`number | ''`) and a sort select, all derived in render with `toSorted`.
+- Task H3.5a/b were fixed in one commit because both change the same hook.
+- Real failure found by testing: the LOOTED_OUT label was hidden after a claim (task H3.13a, audit #06).
