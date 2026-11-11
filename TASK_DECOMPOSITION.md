@@ -282,7 +282,7 @@
 - [x] Task H3.13a: Show the phase label after a successful claim so LOOTED_OUT is visible (fix)
 - [x] Task H3.14: Add AI_FAILURE_AUDIT entries for real HW3 failures only (one entry added: #06)
 - [x] Task H3.15: Mark HW3 tasks done and update contract (as built)
-- [ ] Task H3.16: Push to GitHub and tag hw3-done
+- [x] Task H3.16: Push to GitHub and tag hw3-done
 
 * RULE: Never prompt AI with more than 1 sub-task at a time.
 * RULE: Commits contain JSX/JS only or CSS only, never both.
