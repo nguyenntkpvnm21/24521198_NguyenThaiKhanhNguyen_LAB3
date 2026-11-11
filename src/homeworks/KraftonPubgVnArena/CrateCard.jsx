@@ -32,8 +32,14 @@ export function CrateCard({
   );
   const phase = getDropPhase(nowMs, crate, stock);
   const canClaim = phase === 'AIRDROP_LIVE' && claim.status !== 'PENDING';
-  const statusText = claim.status === 'IDLE' ? PHASE_LABELS[phase] : claim.message;
-
+  const isClosed = phase === 'LOOTED_OUT' || phase === 'EXPIRED';
+  let statusText = PHASE_LABELS[phase];
+  if (claim.status !== 'IDLE') {
+    statusText =
+      claim.status === 'SUCCESS' && isClosed
+        ? `${claim.message}. ${PHASE_LABELS[phase]}`
+        : claim.message;
+  }
   return (
     <article className={styles.crate} aria-labelledby={headingId}>
       <h3 id={headingId} className={styles.crateTitle}>
