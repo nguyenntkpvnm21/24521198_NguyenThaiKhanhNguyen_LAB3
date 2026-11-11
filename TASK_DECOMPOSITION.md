@@ -190,7 +190,7 @@
 - [x] Task H2.16: Verify (Profiler isolation, forbidden scan, lint, build, Lighthouse)
 - [x] Task H2.17: Add AI_FAILURE_AUDIT entries for real HW2 failures only (no entry added: no real AI failure was observed in HW2)
 - [x] Task H2.18: Mark HW2 tasks done and update contract (as built)
-- [ ] Task H2.19: Push to GitHub and tag hw2-done
+- [x] Task H2.19: Push to GitHub and tag hw2-done
 
 * RULE: Never prompt AI with more than 1 sub-task at a time.
 * RULE: Commits contain JSX/JS only or CSS only, never both.
@@ -261,3 +261,92 @@
 - Layout: black keys are zero-width list items whose buttons are absolutely positioned, so no inline styles are needed.
 - Forbidden-pattern scan: `keypress` became `keypress(?!ed)` because the class name `keyPressed` matched the case-insensitive pattern.
 - Known limitations: 88 keys are 88 Tab stops (no roving tabindex), and dragging across keys does not glissando because each key needs its own press.
+
+# Work Breakdown Structure (Homework 3)
+
+- [ ] Task H3.1: Add HW3 WBS and contract (docs)
+- [ ] Task H3.2: Add KraftonPubgVnArena CSS module scaffold (CSS only, class names from contract)
+- [ ] Task H3.3: Add arena data: three crate drops and four squad standings (data only)
+- [ ] Task H3.4: Add pure helpers: formatVnd, formatCountdown, getDropPhase, getVisibleStandings
+- [ ] Task H3.5: Add usePubgAirdropTimer as in the slide, then run lint and record real findings
+- [ ] Task H3.6: Add simulated API: abortable wait, fetchServerOffset, claimCrate with deterministic 409
+- [ ] Task H3.7: Add CrateCard: countdown, derived phase, VND price, stock, claim button
+- [ ] Task H3.8: Add Leaderboard: name filter, min kill points, sort select, derived with toSorted
+- [ ] Task H3.9: Add KraftonPubgVnArena shell: render crates and leaderboard, load server offset with AbortController
+- [ ] Task H3.10: Mount KraftonPubgVnArena in App as a separate view via #arena
+- [ ] Task H3.11: Optimistic claim, 409 rollback and in-flight claimId lock
+- [ ] Task H3.12: Responsive 375px CSS, focus ring and reduced motion (CSS only)
+- [ ] Task H3.13: Verify (background tab resync, 409 rollback, double click, Lighthouse, forbidden scan, lint, build)
+- [ ] Task H3.14: Add AI_FAILURE_AUDIT entries for real HW3 failures only
+- [ ] Task H3.15: Mark HW3 tasks done and update contract (as built)
+- [ ] Task H3.16: Push to GitHub and tag hw3-done
+
+* RULE: Never prompt AI with more than 1 sub-task at a time.
+* RULE: Commits contain JSX/JS only or CSS only, never both.
+
+## HW3 contract
+
+```js
+// All files live in src/homeworks/KraftonPubgVnArena/ (no virtual list: only 3 crates and 4 squads).
+
+// arenaData.js
+/** @typedef {'WARMUP'|'AIRDROP_LIVE'|'LOOTED_OUT'|'EXPIRED'} DropPhase */
+/** @typedef {{ id: string, title: string, priceVnd: number, remainingStock: number, dropEpochMs: number }} PubgCrateDrop */
+/** @typedef {{ squadId: 'te'|'ces'|'roy'|'agg', squadName: string, wwcdCount: number, placementPts: number, killPts: number }} PubgVnSquadStanding */
+// CLAIM_WINDOW_MS = 120000. SERVER_SKEW_MS = 1500 (simulated server clock ahead of the local clock).
+// createDemoDrops(serverNowMs): PubgCrateDrop[]
+//   'vip-pass'    'PVS Finals VIP Pass + 5,000 G-Coin', stock 5,  drops at serverNowMs + 30000
+//   'gcoin-crate' 'G-Coin Contraband Crate',            stock 20, drops at serverNowMs + 20000
+//   'last-crate'  'Limited Contraband Crate (last one)', stock 1, drops at serverNowMs + 20000
+// SQUAD_STANDINGS: PubgVnSquadStanding[]  (The Expendables, Cerberus Esports, Roy Esports, AGG; invented demo numbers)
+
+// arenaLogic.js (pure functions, no React)
+// formatVnd(n) = Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n)
+// formatCountdown(ms) -> 'mm:ss' (rounded up to whole seconds)
+// getDropPhase(nowMs, crate, stock) -> DropPhase
+//   nowMs < dropEpochMs -> WARMUP; else stock <= 0 -> LOOTED_OUT;
+//   else nowMs >= dropEpochMs + CLAIM_WINDOW_MS -> EXPIRED; else AIRDROP_LIVE.
+// getVisibleStandings(standings, { query, minKillPts, sortBy }) -> filter by name + killPts, then toSorted
+//   sortBy: 'wwcd' | 'placement' | 'kills' | 'total' (total = placementPts + killPts), all descending,
+//   ties broken by squadName.localeCompare. minKillPts: number | '' ('' treated as 0).
+
+// usePubgAirdropTimer.js
+// usePubgAirdropTimer(targetEpochMs, serverOffsetMs = 0) -> { nowMs, remainingMs, isLive }
+//   nowMs = Date.now() + serverOffsetMs, re-read every 200 ms AND immediately on visibilitychange (tab visible).
+//   remainingMs = Math.max(0, targetEpochMs - nowMs). isLive = remainingMs === 0 (slide meaning, not a phase).
+//   Cleanup: clearInterval + removeEventListener('visibilitychange').
+
+// arenaApi.js
+// wait(ms, signal): abortable delay (same pattern as playSequence).
+// fetchServerOffset({ signal }) -> Promise<number>   resolves SERVER_SKEW_MS after 300 ms
+// claimCrate(crateId, claimId, { signal }) -> Promise<{ claimId: string }>
+//   resolves after 800 ms; rejects with error.status === 409 and message 'Looted Out' on the FIRST claim of
+//   'last-crate' only (module counter, deterministic); rejects with AbortError when signal aborts.
+
+// CrateCard.jsx: props { crate, stock, claim, serverOffsetMs, onClaim }
+//   claim: { status: 'IDLE'|'PENDING'|'SUCCESS'|'CONFLICT', message: string }
+//   Calls usePubgAirdropTimer(crate.dropEpochMs, serverOffsetMs); phase = getDropPhase(nowMs, crate, stock).
+//   <time> shows the countdown (no aria-live). One <output aria-live="polite" aria-atomic="true"> shows the
+//   claim message or the phase label, so it only changes on phase or claim changes.
+//   Claim button: type="button", disabled unless phase === 'AIRDROP_LIVE' and claim.status !== 'PENDING'.
+
+// Leaderboard.jsx: props { standings }. State: query, minKillPts: number | '', sortBy. Visible rows derived in render,
+//   no useEffect. useId labels for the search input, min kill points input and sort select. <table> with <caption>,
+//   scrollable region inside its own container. Result count in <output role="status" aria-live="polite">.
+
+// KraftonPubgVnArena.jsx: no props.
+// State: drops (createDemoDrops, lazy init, never mutated), stocks: Record<id, number>,
+//        claims: Record<id, { status, message }>, serverOffsetMs: number (default 0).
+// Refs: abortRef (AbortController for the mount effect), inFlightRef (Map<crateId, claimId>, synchronous lock).
+// Effect (deps []): AbortController, fetchServerOffset, ignore AbortError, cleanup = abort.
+// handleClaim(crateId): return if inFlightRef.has(crateId); claimId = crypto.randomUUID(); set lock;
+//   optimistic: setStocks(prev => ({ ...prev, [id]: prev[id] - 1 })), claims PENDING;
+//   on success -> SUCCESS; on error.status === 409 -> rollback with the functional form
+//   setStocks(prev => ({ ...prev, [id]: prev[id] + 1 })) and CONFLICT; AbortError -> ignore;
+//   finally -> inFlightRef.delete(crateId). Handlers never read stale state.
+
+// CSS classes (KraftonPubgVnArena.module.css):
+// arena, panel, crateList, crate, crateTitle, details, countdown, stock, status, claimButton,
+// filters, field, tableScroll, table, rank
+// Headings: section h2 via aria-labelledby, h3 per crate and leaderboard, no h1, no div, key={crate.id} / key={squadId}.
+```
