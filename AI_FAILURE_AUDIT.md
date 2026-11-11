@@ -159,7 +159,7 @@ Entries are added as they are found across Lab 3.
 - **DevTools proof**: A screenshot of the crate card after the second claim
   (stock 0, Claim button disabled, status text only "Claimed
   successfully") is in the submission PDF.
-- **Engineering fix (commit <hash>)**: Append the phase label to the
+- **Engineering fix (commit 7a4c524)**: Append the phase label to the
   message when the claim succeeded and the phase is LOOTED_OUT or EXPIRED.
   The label is not added while the claim is PENDING, because the optimistic
   stock of 0 would briefly read as "Looted out" before a 409 restores it.
