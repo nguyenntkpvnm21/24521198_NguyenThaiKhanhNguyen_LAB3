@@ -1,0 +1,96 @@
+.card {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  padding: var(--space);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  color: var(--text-primary);
+}
+
+.header {
+  margin: 0 0 var(--space);
+}
+
+.phase {
+  margin: 0;
+  font-weight: 700;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space);
+}
+
+.field {
+  display: grid;
+  gap: calc(var(--space) / 2);
+  margin: 0;
+}
+
+.field input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 2.75rem;
+  border: 1px solid var(--accent);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.button {
+  min-height: 2.75rem;
+  padding: 0 var(--space);
+  border: 1px solid var(--accent);
+  border-radius: calc(var(--radius) / 2);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.scores {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: calc(var(--space) / 2) var(--space);
+  margin: 0;
+}
+
+.scores dd {
+  margin: 0;
+}
+
+.status {
+  display: block;
+  margin: 0;
+  padding: var(--space);
+  border: 1px solid var(--accent);
+  border-radius: calc(var(--radius) / 2);
+}
+
+.log {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.logItem {
+  padding: calc(var(--space) / 2) 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
