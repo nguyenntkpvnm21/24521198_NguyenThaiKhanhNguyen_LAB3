@@ -459,3 +459,80 @@ export function waitForReply(ms, signal) {}
  * button, scores, status, log, logItem
  */
 ```
+
+### Bonus contract amendments (as built)
+
+- Phase names follow the slide's type contract:
+  FRIENDS, DATING_NO_LOVE, OFFICIAL_LOVE, and GHOSTED_EXIT.
+  The initial phase is DATING_NO_LOVE.
+
+- Only transitions in the agreed FSM table are accepted.
+  Other phase/action pairs preserve the current phase.
+  OFFICIAL_LOVE has no outgoing transition in this version.
+
+- Relationship status is stored in one phase value.
+  UI checks such as isDating and isWaiting are derived values,
+  not independently stored relationship booleans.
+
+- Signal inputs initially contain Em: 100 steps x 0.1 and
+  Ai Do: 1 step x 50, following the slide's component formula.
+  The action log starts empty, so both scores initially equal zero.
+  Each score is the sum of steps x multiplier for that actor.
+
+- Signal entries are created in event handlers with
+  crypto.randomUUID() and frozen with Object.freeze().
+  The log is updated immutably using spread syntax.
+  createSignal generates an ID and is not strictly deterministic.
+  transition, getScore, and isRedFlag are pure deterministic helpers.
+
+- Numeric fields use valueAsNumber and preserve an empty field as ''.
+  Signal buttons require finite positive steps and multipliers.
+
+- Scores and the red-flag condition are computed during render.
+  The warning applies only in DATING_NO_LOVE when emScore < rivalScore.
+  The UI presents numeric scores and a textual status indicator;
+  no separate HTML meter element is used.
+
+- The status uses output with role="status" and aria-live="polite".
+  Waiting feedback and the signal log remain outside the live region.
+  All signal inputs have labels associated through useId().
+
+- Ghosting starts only after an Em signal is submitted.
+  Editing an input alone does not start or restart the timer.
+  A new Em signal replaces pendingPingId and restarts the 5-second wait.
+
+- waitForReply is an abortable timeout simulation, not a network request.
+  Completion represents an unanswered message reaching its deadline.
+  The phase then transitions to GHOSTED_EXIT.
+
+- An Ai Do reply cancels the pending wait and adds its effort signal.
+  It does not automatically transition to OFFICIAL_LOVE.
+  Mutual commitment is represented by the separate COMMIT action.
+
+- Effect cleanup aborts the pending wait when its dependencies change
+  or the component unmounts. Abort clears the timer; the abort listener
+  is removed on normal completion or consumed once on cancellation.
+  AbortError is ignored as an expected cancellation outcome.
+
+- GHOSTED_EXIT changes the phase without unmounting the analyzer.
+  Switching to another App view unmounts it.
+  Cleanup releases resources; JavaScript garbage collection cannot
+  be forced or guaranteed by a phase change.
+
+- StrictMode is enabled in development. Its extra mount-time effect
+  check occurs while pendingPingId is initially null.
+  It does not imply two active timers for every Em signal.
+
+- Styling uses CSS Modules and existing CSS custom properties.
+  The layout starts with one column, supports a 375px viewport,
+  and provides visible keyboard focus and 44px minimum control heights.
+  Button transitions run only with prefers-reduced-motion: no-preference.
+
+- Verification passed: Node checks, browser cases from B.8,
+  responsive and keyboard checks, forbidden-pattern scans,
+  lint, and production build.
+  Lighthouse Accessibility and Best Practices both scored 100
+  in Desktop and Mobile modes.
+
+- No new Bonus AI failure was reported during these checks.
+  Existing audit entries are preserved.
