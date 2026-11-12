@@ -1,12 +1,16 @@
-import { useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import styles from './SituationshipAnalyzer.module.css';
 import {
   ACTIONS,
   PHASES,
   createSignal,
   getScore,
+  isRedFlag,
   transition,
 } from './situationshipLogic.js';
+import { waitForReply } from './replyWait.js';
+
+const GHOST_DELAY_MS = 5000;
 
 const PHASE_LABELS = {
   [PHASES.FRIENDS]: 'Bạn bè',
@@ -31,6 +35,14 @@ const toFieldValue = (e) => {
 const isPositive = (n) => Number.isFinite(n) && n > 0;
 const formatScore = (n) => Math.round(n * 100) / 100;
 
+function getStatusText(phase, redFlag) {
+  if (phase === PHASES.GHOSTED_EXIT) return 'Đã thoát khỏi mối quan hệ.';
+  if (phase === PHASES.OFFICIAL_LOVE) return 'Đã chính thức yêu nhau.';
+  if (phase === PHASES.FRIENDS) return 'Đang là bạn bè.';
+  if (redFlag) return 'Red flag: điểm của Em thấp hơn Ai Đó.';
+  return 'Ổn định.';
+}
+
 export function SituationshipAnalyzer() {
   const headingId = useId();
   const emStepsId = useId();
@@ -40,6 +52,7 @@ export function SituationshipAnalyzer() {
 
   const [phase, setPhase] = useState(PHASES.DATING_NO_LOVE);
   const [signals, setSignals] = useState([]);
+  const [pendingPingId, setPendingPingId] = useState(null);
   const [emSteps, setEmSteps] = useState(100);
   const [emMultiplier, setEmMultiplier] = useState(0.1);
   const [rivalSteps, setRivalSteps] = useState(1);
@@ -48,24 +61,47 @@ export function SituationshipAnalyzer() {
   // Derived state: computed in render, no useEffect, no extra state.
   const emScore = getScore(signals, 'EM');
   const rivalScore = getScore(signals, 'AI_DO');
+  const redFlag = isRedFlag(phase, emScore, rivalScore);
   const isEmInputValid = isPositive(emSteps) && isPositive(emMultiplier);
   const isRivalInputValid = isPositive(rivalSteps) && isPositive(rivalMultiplier);
   const isDating = phase === PHASES.DATING_NO_LOVE;
+  const isWaiting = isDating && pendingPingId !== null;
+
+  // Ghosting timer: starts for each unanswered Em ping, aborted by cleanup.
+  useEffect(() => {
+    if (phase !== PHASES.DATING_NO_LOVE || pendingPingId === null) {
+      return undefined;
+    }
+    const controller = new AbortController();
+    waitForReply(GHOST_DELAY_MS, controller.signal)
+      .then(() => {
+        setPhase((prev) => transition(prev, ACTIONS.GHOST));
+        setPendingPingId(null);
+      })
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
+        throw err;
+      });
+    return () => controller.abort();
+  }, [phase, pendingPingId]);
 
   const handleEmTry = () => {
     if (!isEmInputValid) return;
     const signal = createSignal('EM', emSteps, emMultiplier);
     setSignals((prev) => [...prev, signal]);
+    setPendingPingId(signal.id);
   };
 
   const handleRivalReply = () => {
     if (!isRivalInputValid) return;
     const signal = createSignal('AI_DO', rivalSteps, rivalMultiplier);
     setSignals((prev) => [...prev, signal]);
+    setPendingPingId(null);
   };
 
   const handlePhaseAction = (action) => {
     setPhase((prev) => transition(prev, action));
+    setPendingPingId(null);
     if (action === ACTIONS.RESET) setSignals([]);
   };
 
@@ -75,6 +111,11 @@ export function SituationshipAnalyzer() {
         <h2 id={headingId}>Situationship Analyzer</h2>
         <p className={styles.phase}>Phase: {PHASE_LABELS[phase]}</p>
       </header>
+
+      <output className={styles.status} role="status" aria-live="polite">
+        {getStatusText(phase, redFlag)}
+      </output>
+      {isWaiting && <p>Đang chờ hồi đáp (5 giây)...</p>}
 
       <form
         className={styles.controls}
