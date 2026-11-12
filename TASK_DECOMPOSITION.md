@@ -371,18 +371,18 @@
 
 # Work Breakdown Structure (Bonus)
 
-- [ ] Task B.1: Add Bonus WBS and contract (docs)
-- [ ] Task B.2: Add SituationshipAnalyzer CSS Module scaffold with all contract class names (CSS only)
-- [ ] Task B.3: Add pure phase constants and transition(phase, action) in situationshipLogic.js
-- [ ] Task B.4: Add pure helpers createSignal, getScore, isRedFlag in situationshipLogic.js
-- [ ] Task B.5: Add abortable waitForReply(ms, signal) in replyWait.js
-- [ ] Task B.6: Add SituationshipAnalyzer with phase FSM, signal inputs and immutable signal log (commit: feat(fsm): model HenHoKhongYeu state machine)
-- [ ] Task B.7: Mount SituationshipAnalyzer in App as view #bonus
-- [ ] Task B.8: Add derived red-flag output and ghosting timer with AbortController cleanup (commit: feat(ui): add derived red-flag meter & ghosting cleanup)
-- [ ] Task B.9: Add responsive 375px layout, focus ring and reduced motion (CSS only)
-- [ ] Task B.10: Verify (Node check, StrictMode, abort cases, Lighthouse, forbidden scan, lint, build)
-- [ ] Task B.11: Document amendments (and audit entries only for real failures)
-- [ ] Task B.12: Mark Bonus tasks done and update contract
+- [x] Task B.1: Add Bonus WBS and contract (docs)
+- [x] Task B.2: Add SituationshipAnalyzer CSS Module scaffold with all contract class names (CSS only)
+- [x] Task B.3: Add pure phase constants and transition(phase, action) in situationshipLogic.js
+- [x] Task B.4: Add pure helpers createSignal, getScore, isRedFlag in situationshipLogic.js
+- [x] Task B.5: Add abortable waitForReply(ms, signal) in replyWait.js
+- [x] Task B.6: Add SituationshipAnalyzer with phase FSM, signal inputs and immutable signal log (commit: feat(fsm): model HenHoKhongYeu state machine)
+- [x] Task B.7: Mount SituationshipAnalyzer in App as view #bonus
+- [x] Task B.8: Add derived red-flag output and ghosting timer with AbortController cleanup (commit: feat(ui): add derived red-flag meter & ghosting cleanup)
+- [x] Task B.9: Add responsive 375px layout, focus ring and reduced motion (CSS only)
+- [x] Task B.10: Verify (Node check, StrictMode, abort cases, Lighthouse, forbidden scan, lint, build)
+- [x] Task B.11: Document amendments (and audit entries only for real failures)
+- [x] Task B.12: Mark Bonus tasks done and update contract
 - [ ] Task B.13: Push to GitHub and tag bonus-done
 
 * RULE: Never prompt AI with more than 1 sub-task at a time.
