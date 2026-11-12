@@ -368,3 +368,94 @@
 - Leaderboard "kill-feed filter" was not described in the slide. Built as name search, Min Kill Points (`number | ''`) and a sort select, all derived in render with `toSorted`.
 - Task H3.5a/b were fixed in one commit because both change the same hook.
 - Real failure found by testing: the LOOTED_OUT label was hidden after a claim (task H3.13a, audit #06).
+
+# Work Breakdown Structure (Bonus)
+
+- [ ] Task B.1: Add Bonus WBS and contract (docs)
+- [ ] Task B.2: Add SituationshipAnalyzer CSS Module scaffold with all contract class names (CSS only)
+- [ ] Task B.3: Add pure phase constants and transition(phase, action) in situationshipLogic.js
+- [ ] Task B.4: Add pure helpers createSignal, getScore, isRedFlag in situationshipLogic.js
+- [ ] Task B.5: Add abortable waitForReply(ms, signal) in replyWait.js
+- [ ] Task B.6: Add SituationshipAnalyzer with phase FSM, signal inputs and immutable signal log (commit: feat(fsm): model HenHoKhongYeu state machine)
+- [ ] Task B.7: Mount SituationshipAnalyzer in App as view #bonus
+- [ ] Task B.8: Add derived red-flag output and ghosting timer with AbortController cleanup (commit: feat(ui): add derived red-flag meter & ghosting cleanup)
+- [ ] Task B.9: Add responsive 375px layout, focus ring and reduced motion (CSS only)
+- [ ] Task B.10: Verify (Node check, StrictMode, abort cases, Lighthouse, forbidden scan, lint, build)
+- [ ] Task B.11: Document amendments (and audit entries only for real failures)
+- [ ] Task B.12: Mark Bonus tasks done and update contract
+- [ ] Task B.13: Push to GitHub and tag bonus-done
+
+* RULE: Never prompt AI with more than 1 sub-task at a time.
+* RULE: Commits contain JSX/JS only or CSS only, never both.
+
+## Bonus contract
+
+Files: `src/components/SituationshipAnalyzer.jsx`, `SituationshipAnalyzer.module.css`,
+`situationshipLogic.js` (pure, no React), `replyWait.js`. View `#bonus` in App.
+
+Decisions:
+- Phase set follows the slide code block (the slide description lists a different set).
+- Initial phase is DATING_NO_LOVE, as in the slide component.
+- Default signals: Em 100 steps x 0.1, Ai Do 1 step x 50. Score = sum of steps x multiplier.
+- One FSM value `phase`; no isDating / isLoved booleans.
+
+```js
+/**
+ * @typedef {'FRIENDS' | 'DATING_NO_LOVE' | 'OFFICIAL_LOVE' | 'GHOSTED_EXIT'} RelationshipPhase
+ * @typedef {'START_DATING' | 'COMMIT' | 'GHOST' | 'RESET'} PhaseAction
+ * @typedef {'EM' | 'AI_DO'} EffortActor
+ *
+ * @typedef {Object} EffortSignal
+ * @property {string} id            crypto.randomUUID(), used as React key
+ * @property {EffortActor} actor
+ * @property {number} steps
+ * @property {number} multiplier
+ */
+
+/*
+ * FSM transition table (any other pair returns the same phase):
+ *   FRIENDS        --START_DATING--> DATING_NO_LOVE
+ *   DATING_NO_LOVE --COMMIT--------> OFFICIAL_LOVE
+ *   DATING_NO_LOVE --GHOST---------> GHOSTED_EXIT
+ *   GHOSTED_EXIT   --RESET---------> FRIENDS
+ */
+
+/** @returns {RelationshipPhase} */
+export function transition(phase, action) {}
+
+/** @returns {EffortSignal} */
+export function createSignal(actor, steps, multiplier) {}
+
+/** Sum of steps * multiplier for one actor. @returns {number} */
+export function getScore(signals, actor) {}
+
+/** phase === 'DATING_NO_LOVE' && emScore < rivalScore. @returns {boolean} */
+export function isRedFlag(phase, emScore, rivalScore) {}
+
+/** Resolves after ms, rejects with signal.reason on abort. @returns {Promise<void>} */
+export function waitForReply(ms, signal) {}
+
+/*
+ * Component state (useState):
+ *   phase: RelationshipPhase             (initial 'DATING_NO_LOVE')
+ *   signals: EffortSignal[]              (immutable log, [...prev, signal])
+ *   pendingPingId: string | null         (id of the unanswered Em signal)
+ *   emSteps, emMultiplier, rivalSteps, rivalMultiplier: number | ''
+ * Derived in render (no useEffect, no extra state):
+ *   emScore, rivalScore, redFlag, isEmInputValid, isRivalInputValid
+ *
+ * Effect (deps: phase, pendingPingId):
+ *   if phase !== 'DATING_NO_LOVE' or pendingPingId === null: return
+ *   new AbortController(); waitForReply(5000, signal)
+ *     .then(() => setPhase((p) => transition(p, 'GHOST')))
+ *     .catch(ignore AbortError)
+ *   cleanup: controller.abort()
+ * Abort cases: Ai Do replies, a new Em ping, Dung lai (GHOST), RESET, unmount.
+ *
+ * <output role="status" aria-live="polite">: short text only when
+ * redFlag or phase changes. Every input has label htmlFor from useId().
+ *
+ * CSS Module classes: card, header, phase, controls, field, actions,
+ * button, scores, status, log, logItem
+ */
+```
