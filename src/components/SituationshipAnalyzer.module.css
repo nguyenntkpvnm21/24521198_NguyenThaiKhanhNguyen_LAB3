@@ -1,5 +1,8 @@
 .card {
   box-sizing: border-box;
+  display: grid;
+  gap: var(--space);
+  width: 100%;
   max-width: 100%;
   min-width: 0;
   padding: var(--space);
@@ -7,10 +10,18 @@
   border-radius: var(--radius);
   background: var(--card-bg);
   color: var(--text-primary);
+  overflow-wrap: anywhere;
 }
 
 .header {
-  margin: 0 0 var(--space);
+  display: grid;
+  gap: calc(var(--space) / 2);
+  min-width: 0;
+  margin: 0;
+}
+
+.header h2 {
+  margin: 0;
 }
 
 .phase {
@@ -22,19 +33,29 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space);
+  min-width: 0;
 }
 
 .field {
   display: grid;
   gap: calc(var(--space) / 2);
+  min-width: 0;
   margin: 0;
+}
+
+.field label {
+  font-weight: 600;
 }
 
 .field input {
   box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 2.75rem;
+  padding: calc(var(--space) / 2);
   border: 1px solid var(--accent);
+  border-radius: calc(var(--radius) / 2);
   background: var(--card-bg);
   color: var(--text-primary);
   font: inherit;
@@ -43,21 +64,47 @@
 .actions {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space);
+  gap: calc(var(--space) / 2);
+  min-width: 0;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+.actions li {
+  min-width: 0;
+}
+
 .button {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   min-height: 2.75rem;
-  padding: 0 var(--space);
+  padding: calc(var(--space) / 2) var(--space);
   border: 1px solid var(--accent);
   border-radius: calc(var(--radius) / 2);
   background: var(--card-bg);
   color: var(--text-primary);
   font: inherit;
+  line-height: inherit;
+  overflow-wrap: anywhere;
   cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  background: color-mix(
+    in srgb,
+    var(--accent) 15%,
+    var(--card-bg)
+  );
+}
+
+.button:active:not(:disabled) {
+  background: color-mix(
+    in srgb,
+    var(--accent) 25%,
+    var(--card-bg)
+  );
 }
 
 .button:disabled {
@@ -65,32 +112,78 @@
   cursor: not-allowed;
 }
 
+.field input:focus-visible,
+.button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .scores {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: calc(var(--space) / 2) var(--space);
+  min-width: 0;
   margin: 0;
 }
 
+.scores dt {
+  font-weight: 700;
+}
+
 .scores dd {
+  min-width: 0;
   margin: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .status {
   display: block;
+  min-width: 0;
   margin: 0;
   padding: var(--space);
   border: 1px solid var(--accent);
   border-radius: calc(var(--radius) / 2);
+  background: color-mix(
+    in srgb,
+    var(--accent) 10%,
+    var(--card-bg)
+  );
 }
 
 .log {
+  min-width: 0;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .logItem {
+  min-width: 0;
   padding: calc(var(--space) / 2) 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+@media (min-width: 40rem) {
+  .controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .controls {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button {
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease;
+  }
 }
