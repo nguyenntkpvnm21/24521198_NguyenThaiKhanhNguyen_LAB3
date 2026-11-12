@@ -45,3 +45,52 @@ const TRANSITIONS = new Map([
 export function transition(phase, action) {
   return TRANSITIONS.get(phase)?.get(action) ?? phase;
 }
+
+/**
+ * @typedef {'EM' | 'AI_DO'} EffortActor
+ *
+ * @typedef {Object} EffortSignal
+ * @property {string} id
+ * @property {EffortActor} actor
+ * @property {number} steps
+ * @property {number} multiplier
+ */
+
+/**
+ * Builds one immutable log entry. The id is used as React key.
+ * @param {EffortActor} actor
+ * @param {number} steps
+ * @param {number} multiplier
+ * @returns {EffortSignal}
+ */
+export function createSignal(actor, steps, multiplier) {
+  return Object.freeze({
+    id: crypto.randomUUID(),
+    actor,
+    steps,
+    multiplier,
+  });
+}
+
+/**
+ * Sum of steps * multiplier for one actor.
+ * @param {readonly EffortSignal[]} signals
+ * @param {EffortActor} actor
+ * @returns {number}
+ */
+export function getScore(signals, actor) {
+  return signals
+    .filter((s) => s.actor === actor)
+    .reduce((total, s) => total + s.steps * s.multiplier, 0);
+}
+
+/**
+ * Red flag only while still in DATING_NO_LOVE and Em is behind.
+ * @param {RelationshipPhase} phase
+ * @param {number} emScore
+ * @param {number} rivalScore
+ * @returns {boolean}
+ */
+export function isRedFlag(phase, emScore, rivalScore) {
+  return phase === PHASES.DATING_NO_LOVE && emScore < rivalScore;
+}
