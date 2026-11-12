@@ -383,7 +383,7 @@
 - [x] Task B.10: Verify (Node check, StrictMode, abort cases, Lighthouse, forbidden scan, lint, build)
 - [x] Task B.11: Document amendments (and audit entries only for real failures)
 - [x] Task B.12: Mark Bonus tasks done and update contract
-- [ ] Task B.13: Push to GitHub and tag bonus-done
+- [x] Task B.13: Push to GitHub and tag bonus-done
 
 * RULE: Never prompt AI with more than 1 sub-task at a time.
 * RULE: Commits contain JSX/JS only or CSS only, never both.
