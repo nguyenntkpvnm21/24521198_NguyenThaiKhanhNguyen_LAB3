@@ -5,6 +5,7 @@ import { PubgMatchTelemetry } from './components/PubgMatchTelemetry.jsx';
 import { DrumMachine } from './homeworks/DrumMachine/DrumMachine.jsx';
 import { GrandPiano88 } from './homeworks/GrandPiano88/GrandPiano88.jsx';
 import { KraftonPubgVnArena } from './homeworks/KraftonPubgVnArena/KraftonPubgVnArena.jsx';
+import { SituationshipAnalyzer } from './components/SituationshipAnalyzer.jsx';
 import styles from './App.module.css';
 
 function LabExercises() {
@@ -45,6 +46,13 @@ const VIEWS = [
     title: 'PUBG Vietnam Arena',
     hash: '#arena',
     Content: KraftonPubgVnArena,
+  },
+  {
+    id: 'bonus',
+    label: 'Situationship (Bonus)',
+    title: 'Situationship Analyzer',
+    hash: '#bonus',
+    Content: SituationshipAnalyzer,
   },
 ];
 
